@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAT Angel — Digital SAT Prep That Actually Works</title>
+<meta name="description" content="Adaptive Digital SAT practice, instant AI answer explanations, and a score predictor that tracks your real progress. Monthly or lifetime access.">
+<meta property="og:title" content="SAT Angel — Digital SAT Prep That Actually Works">
+<meta property="og:description" content="Adaptive practice, AI explanations, and a score predictor built for the Digital SAT.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Cpath d='M13 1 L15.2 10.8 L25 13 L15.2 15.2 L13 25 L10.8 15.2 L1 13 L10.8 10.8 Z' fill='%23E7B85C'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep:#0B1229;
+    --navy:#121A3A;
+    --card:#182352;
+    --sky:#6FB8E8;
+    --sky-soft:#BFE1F7;
+    --gold:#E7B85C;
+    --gold-soft:#F4D999;
+    --amber:#F0A202;
+    --amber-deep:#8A5A00;
+    --emerald:#3FBE8C;
+    --paper:#F3F5FB;
+    --paper-dim:#A9B2D4;
+    --line:rgba(243,245,251,0.12);
+    --danger:#E08585;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--navy-deep); color:var(--paper); font-family:'Inter',sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased;}
+  h1,h2,h3{font-family:'Fraunces',serif; font-weight:600; margin:0 0 0.4em; letter-spacing:-0.01em;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  a{color:inherit;}
+  .wrap{max-width:1120px; margin:0 auto; padding:0 24px;}
+  section{padding:84px 24px; position:relative;}
+
+  /* Promo banner */
+  .promo-banner{
+    background:linear-gradient(90deg, var(--amber), #F7C24A);
+    color:#3A2600; text-align:center; font-size:0.88rem; font-weight:600;
+    padding:10px 16px; position:sticky; top:0; z-index:60;
+  }
+  .promo-banner b{font-weight:800;}
+  .promo-banner .strike{text-decoration:line-through; opacity:0.65; margin:0 4px;}
+
+  /* Nav */
+  header{position:sticky; top:36px; z-index:55; background:rgba(11,18,41,0.85); backdrop-filter:blur(10px); border-bottom:1px solid var(--line);}
+  nav{display:flex; align-items:center; justify-content:space-between; padding:14px 24px; max-width:1120px; margin:0 auto;}
+  .brand{display:flex; align-items:center; gap:9px; font-family:'Fraunces',serif; font-weight:600; font-size:1.1rem;}
+  .navlinks{display:flex; gap:26px; font-size:0.9rem; color:var(--paper-dim);}
+  .navlinks a{text-decoration:none; transition:color .2s;}
+  .navlinks a:hover{color:var(--sky-soft);}
+  .navlinks a:focus-visible, button:focus-visible, .faq-q:focus-visible{outline:2px solid var(--gold); outline-offset:3px;}
+
+  .btn{font-weight:700; font-size:0.92rem; padding:13px 22px; border-radius:10px; border:1px solid transparent; cursor:pointer; transition:transform .15s, box-shadow .15s; text-decoration:none; display:inline-flex; align-items:center; gap:8px; white-space:nowrap;}
+  .btn-primary{background:linear-gradient(135deg, var(--gold), var(--amber)); color:#2A1B00;}
+  .btn-primary:hover{transform:translateY(-1px); box-shadow:0 10px 26px rgba(231,184,92,0.3);}
+  .btn-secondary{background:var(--card); border-color:var(--line); color:var(--paper);}
+  .btn-secondary:hover{border-color:var(--sky-soft); color:var(--sky-soft);}
+  .btn-sm{padding:9px 16px; font-size:0.82rem;}
+
+  /* Hero */
+  .hero{padding-top:72px; padding-bottom:60px; text-align:center;}
+  .hero-badge{
+    display:inline-flex; align-items:center; gap:8px; background:rgba(111,184,232,0.1);
+    border:1px solid rgba(111,184,232,0.3); color:var(--sky-soft); font-family:'IBM Plex Mono',monospace;
+    font-size:0.76rem; padding:7px 14px; border-radius:999px; letter-spacing:0.04em; margin-bottom:22px;
+  }
+  .hero h1{font-size:clamp(2.3rem,5.2vw,3.6rem); line-height:1.06; max-width:16ch; margin:0 auto 20px;}
+  .hero h1 em{font-style:italic; color:var(--gold-soft);}
+  .hero p.lede{color:var(--paper-dim); font-size:1.08rem; max-width:52ch; margin:0 auto 34px;}
+  .hero-ctas{display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-bottom:14px;}
+  .hero-sub{color:var(--paper-dim); font-size:0.82rem;}
+
+  /* Stats */
+  .stats{display:flex; justify-content:center; gap:60px; flex-wrap:wrap; padding:46px 24px; border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .stat{text-align:center;}
+  .stat b{display:block; font-family:'Fraunces',serif; font-size:2.1rem; color:var(--gold-soft);}
+  .stat span{font-size:0.84rem; color:var(--paper-dim);}
+
+  .section-head{max-width:640px; margin:0 auto 46px; text-align:center;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace; font-size:0.76rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--sky-soft); margin-bottom:14px; display:flex; align-items:center; justify-content:center; gap:10px;}
+  .section-head h2{font-size:clamp(1.7rem,3.2vw,2.3rem);}
+  .section-head p{color:var(--paper-dim);}
+
+  /* Features */
+  .grid4{display:grid; grid-template-columns:repeat(4,1fr); gap:18px; max-width:1120px; margin:0 auto;}
+  .feature{padding:26px; border-radius:16px; background:var(--card); border:1px solid var(--line);}
+  .feature .ic{width:38px; height:38px; border-radius:10px; background:rgba(111,184,232,0.12); display:flex; align-items:center; justify-content:center; margin-bottom:16px; color:var(--sky-soft);}
+  .feature h3{font-size:1.02rem; margin-bottom:6px;}
+  .feature p{color:var(--paper-dim); font-size:0.88rem; margin:0;}
+
+  /* Pricing */
+  .plans{display:grid; grid-template-columns:1fr 1fr; gap:24px; max-width:820px; margin:0 auto;}
+  .plan{padding:34px; border-radius:20px; background:var(--card); border:1px solid var(--line); display:flex; flex-direction:column; position:relative;}
+  .plan-lifetime{border-color:var(--amber); background:linear-gradient(180deg, rgba(240,162,2,0.12), var(--card) 55%); box-shadow:0 20px 44px rgba(240,162,2,0.14);}
+  .plan-badge{position:absolute; top:-14px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,var(--amber),#F7C24A); color:#2A1B00; font-family:'IBM Plex Mono',monospace; font-size:0.7rem; font-weight:700; padding:6px 16px; border-radius:999px; letter-spacing:0.05em; text-transform:uppercase; white-space:nowrap;}
+  .plan h3{font-size:1.15rem; margin-bottom:4px;}
+  .plan .plan-desc{color:var(--paper-dim); font-size:0.86rem; margin-bottom:20px;}
+  .plan .price-row{display:flex; align-items:baseline; gap:10px; margin-bottom:4px; flex-wrap:wrap;}
+  .plan .price-row .old{font-size:1.2rem; color:var(--paper-dim); text-decoration:line-through;}
+  .plan .amount{font-family:'Fraunces',serif; font-size:2.5rem; color:var(--paper);}
+  .plan .period{color:var(--paper-dim); font-size:0.88rem;}
+  .plan .save-note{font-size:0.8rem; color:var(--emerald); font-weight:600; margin-bottom:20px;}
+  .plan .save-note.spacer{visibility:hidden;}
+  .plan ul{list-style:none; margin:0 0 26px; padding:0; display:flex; flex-direction:column; gap:11px; flex-grow:1;}
+  .plan li{display:flex; gap:10px; align-items:flex-start; font-size:0.88rem; color:var(--paper-dim);}
+  .plan li::before{content:"✓"; color:var(--sky-soft); font-weight:700; flex-shrink:0;}
+  .plan-lifetime li::before{color:var(--gold-soft);}
+  .plan .btn{width:100%; justify-content:center;}
+
+  .addon-card{
+    max-width:820px; margin:22px auto 0; background:var(--card); border:1px dashed rgba(111,184,232,0.4);
+    border-radius:16px; padding:24px 28px; display:flex; justify-content:space-between; align-items:center;
+    gap:24px; flex-wrap:wrap;
+  }
+  .addon-tag{
+    font-family:'IBM Plex Mono',monospace; font-size:0.7rem; color:var(--sky-soft); letter-spacing:0.05em;
+    text-transform:uppercase; display:block; margin-bottom:8px;
+  }
+  .addon-left h3{font-size:1.02rem; margin-bottom:6px;}
+  .addon-left p{color:var(--paper-dim); font-size:0.86rem; margin:0; max-width:44ch;}
+  .addon-right{display:flex; flex-direction:column; align-items:flex-end; gap:12px; flex-shrink:0;}
+  .addon-price{display:flex; align-items:baseline; gap:6px;}
+  .addon-price .amount{font-family:'Fraunces',serif; font-size:1.7rem; color:var(--paper);}
+  .addon-price .period{color:var(--paper-dim); font-size:0.82rem;}
+  .addon-right .btn{white-space:nowrap;}
+
+  /* FAQ */
+  .faq{max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:10px;}
+  .faq-item{background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden;}
+  .faq-q{width:100%; text-align:left; background:none; border:none; color:var(--paper); padding:19px 22px; font-size:0.96rem; font-weight:600; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:14px;}
+  .faq-q .plus{font-family:'IBM Plex Mono',monospace; color:var(--sky-soft); transition:transform .2s; flex-shrink:0;}
+  .faq-item.open .faq-q .plus{transform:rotate(45deg);}
+  .faq-a{max-height:0; overflow:hidden; transition:max-height .25s ease;}
+  .faq-a p{margin:0; padding:0 22px 20px; color:var(--paper-dim); font-size:0.9rem;}
+
+  /* Final CTA */
+  .final-cta{text-align:center; background:linear-gradient(180deg, transparent, rgba(24,35,82,0.5)); border-top:1px solid var(--line);}
+  .final-cta h2{font-size:clamp(1.8rem,3.6vw,2.6rem); max-width:20ch; margin:0 auto 16px;}
+  .final-cta p{color:var(--paper-dim); margin-bottom:30px;}
+
+  footer{padding:40px 24px; text-align:center; color:var(--paper-dim); font-size:0.83rem; border-top:1px solid var(--line);}
+  footer .brand{justify-content:center; margin-bottom:10px; color:var(--paper);}
+  footer a{text-decoration:none; color:var(--paper-dim); transition:color .2s;}
+  footer a:hover{color:var(--sky-soft);}
+  footer .footer-links{font-size:0.82rem;}
+
+  @media (max-width:900px){
+    .grid4{grid-template-columns:1fr 1fr;}
+  }
+  @media (max-width:720px){
+    .navlinks{display:none;}
+    .plans{grid-template-columns:1fr;}
+    .grid4{grid-template-columns:1fr;}
+    .stats{gap:32px;}
+    header{top:52px;}
+    .addon-card{flex-direction:column; align-items:flex-start;}
+    .addon-right{align-items:flex-start; width:100%;}
+    .addon-right .btn{width:100%; justify-content:center;}
+  }
+  @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto;} *{transition-duration:.001ms !important;} }
+</style>
+</head>
+<body>
+
+<div class="promo-banner" id="promoBanner">
+  🎒 Back to School Sale: Get Lifetime Access for <b>$99.99</b> <span class="strike">$149.99</span> — Save $50, ends September 20<span id="daysLeft"></span>.
+</div>
+
+<header>
+  <nav>
+    <div class="brand">
+      <svg width="24" height="24" viewBox="0 0 26 26" fill="none"><path d="M13 1 L15.2 10.8 L25 13 L15.2 15.2 L13 25 L10.8 15.2 L1 13 L10.8 10.8 Z" fill="#E7B85C"/></svg>
+      SAT Angel
+    </div>
+    <div class="navlinks">
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="dashboard.html">Try it free</a>
+      <a href="login.html">Log in</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a href="#pricing" class="btn btn-primary btn-sm">Get Started</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-badge">✦ Built for the Digital SAT — Bluebook format</div>
+  <h1>Score higher on the SAT, <em>without guessing</em> what to study.</h1>
+  <p class="lede">Adaptive practice, instant AI explanations, and a score predictor that actually tracks your progress — so every session moves the number that matters.</p>
+  <div class="hero-ctas">
+    <a href="#pricing" class="btn btn-primary">🔓 Get Lifetime Access — $99.99</a>
+    <a href="#pricing" class="btn btn-secondary">Start Monthly Plan — $49.99/mo</a>
+  </div>
+  <p class="hero-sub">No SAT experience required · Cancel monthly plan anytime · Back to School Sale ends September 20</p>
+  <p class="hero-sub"><a href="dashboard.html" style="color:var(--sky-soft); text-decoration:underline;">Or try real practice questions free, no payment required →</a></p>
+</section>
+
+<div class="stats">
+  <div class="stat"><b>Adaptive</b><span>practice that targets weak spots</span></div>
+  <div class="stat"><b>Instant</b><span>AI explanations on every question</span></div>
+  <div class="stat"><b>Bluebook</b><span>format, built for the digital test</span></div>
+</div>
+
+<section id="features">
+  <div class="section-head">
+    <div class="eyebrow">What's Inside</div>
+    <h2>Everything a $200/hr tutor gives you, on demand.</h2>
+  </div>
+  <div class="grid4">
+    <div class="feature">
+      <div class="ic">◈</div>
+      <h3>Adaptive Practice Tests</h3>
+      <p>Difficulty adjusts to you in real time, just like the real Digital SAT's multistage design.</p>
+    </div>
+    <div class="feature">
+      <div class="ic">✦</div>
+      <h3>Instant AI Explanations</h3>
+      <p>Every question comes with a reasoning walkthrough, not just the correct letter.</p>
+    </div>
+    <div class="feature">
+      <div class="ic">◎</div>
+      <h3>Score Predictor</h3>
+      <p>A live-updating estimate of your current SAT score based on recent performance.</p>
+    </div>
+    <div class="feature">
+      <div class="ic">▤</div>
+      <h3>Performance Analytics</h3>
+      <p>See exactly which skills are costing you points, down to the sub-topic.</p>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="section-head">
+    <div class="eyebrow">Pricing</div>
+    <h2>Pick the plan that matches your timeline.</h2>
+    <p>Both plans unlock the full question bank, AI explanations, and analytics.</p>
+  </div>
+  <div class="plans">
+    <div class="plan">
+      <h3>Monthly</h3>
+      <p class="plan-desc">Flexible, month to month.</p>
+      <div class="price-row"><span class="amount">$49.99</span><span class="period">/ month</span></div>
+      <div class="save-note spacer">spacer</div>
+      <ul>
+        <li>Full adaptive question bank</li>
+        <li>Instant AI answer explanations</li>
+        <li>Score predictor & analytics</li>
+        <li>Ongoing access while subscribed</li>
+        <li>Cancel anytime, no contract</li>
+      </ul>
+      <a href="#" class="btn btn-secondary" data-plan="monthly">Start Monthly Plan</a>
+    </div>
+    <div class="plan plan-lifetime">
+      <div class="plan-badge">Best Value · Save $50</div>
+      <h3>Lifetime Access</h3>
+      <p class="plan-desc">Pay once, prep for as long as it takes.</p>
+      <div class="price-row"><span class="old">$149.99</span><span class="amount">$99.99</span><span class="period">one-time</span></div>
+      <div class="save-note">Back to School Sale — ends September 20</div>
+      <ul>
+        <li>Everything in Monthly, forever</li>
+        <li>All future content updates included</li>
+        <li>Priority AI tutoring queue</li>
+        <li>No recurring charge, ever</li>
+        <li>Locks in today's $99.99 price</li>
+      </ul>
+      <a href="#" class="btn btn-primary" data-plan="lifetime">Get Lifetime Access</a>
+    </div>
+  </div>
+
+  <div class="addon-card">
+    <div class="addon-left">
+      <span class="addon-tag">Recommended add-on</span>
+      <h3>Demo Course</h3>
+      <p>A short, guided walkthrough of the platform and core strategies — a fast way to get oriented before diving into full practice. Often added alongside either plan above.</p>
+    </div>
+    <div class="addon-right">
+      <div class="addon-price"><span class="amount">$15</span><span class="period">one-time</span></div>
+      <a href="#" class="btn btn-secondary" data-plan="democourse">Add Demo Course</a>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="section-head">
+    <div class="eyebrow">FAQ</div>
+    <h2>Questions, answered.</h2>
+  </div>
+  <div class="faq" id="faqList"></div>
+</section>
+
+<section class="final-cta">
+  <h2>Your target score is closer than you think.</h2>
+  <p>Join students already prepping with SAT Angel.</p>
+  <div class="hero-ctas">
+    <a href="#pricing" class="btn btn-primary">Get Lifetime Access — $99.99</a>
+    <a href="#pricing" class="btn btn-secondary">Start Monthly — $49.99/mo</a>
+  </div>
+</section>
+
+<footer>
+  <div class="brand"><svg width="18" height="18" viewBox="0 0 26 26" fill="none"><path d="M13 1 L15.2 10.8 L25 13 L15.2 15.2 L13 25 L10.8 15.2 L1 13 L10.8 10.8 Z" fill="#E7B85C"/></svg> SAT Angel</div>
+  <p>Questions or refund requests: <a href="mailto:support@satangel.com" style="color:var(--sky-soft); text-decoration:none;">support@satangel.com</a></p>
+  <p class="footer-links"><a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms of Service</a></p>
+  <p>© SAT Angel. All rights reserved.</p>
+</footer>
+
+<script>
+// ---------- FAQ accordion ----------
+const FAQ_DATA = [
+  { q: "Is the $99.99 lifetime deal really one-time?", a: "Yes. You're charged once, and your account keeps full access permanently — no recurring billing, no expiration. The $99.99 price is a limited-time discount off the regular $149.99 lifetime rate." },
+  { q: "Can I cancel the monthly plan anytime?", a: "Yes. The $49.99/month plan has no contract — cancel from your account settings whenever you like, and you'll keep access through the end of your current billing period." },
+  { q: "Do I get future content updates?", a: "Lifetime members receive all future question bank additions and feature updates at no extra cost. Monthly members receive updates for as long as their subscription is active." },
+  { q: "Is this based on the actual Digital SAT format?", a: "Yes. The practice interface mirrors the Bluebook app's layout, including the question navigator, flag-for-review tool, and section timing." },
+  { q: "What if I switch from monthly to lifetime later?", a: "You can upgrade to lifetime access at any point from your dashboard; your remaining monthly payments are credited toward the $99.99 lifetime price." },
+  { q: "What's your refund policy?", a: "If you're not satisfied within 7 days of purchase, contact support@satangel.com for a full refund on the Lifetime plan or Demo Course. Monthly subscriptions can be cancelled anytime and you won't be billed again — the current billing period remains active through its end date." }
+];
+const faqList = document.getElementById('faqList');
+FAQ_DATA.forEach((item, i) => {
+  const wrap = document.createElement('div');
+  wrap.className = 'faq-item';
+  wrap.innerHTML = `
+    <button class="faq-q" aria-expanded="false">
+      <span>${item.q}</span>
+      <span class="plus mono">+</span>
+    </button>
+    <div class="faq-a"><p>${item.a}</p></div>
+  `;
+  const btn = wrap.querySelector('.faq-q');
+  const answer = wrap.querySelector('.faq-a');
+  btn.addEventListener('click', () => {
+    const isOpen = wrap.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(el => {
+      el.classList.remove('open');
+      el.querySelector('.faq-a').style.maxHeight = null;
+      el.querySelector('.faq-q').setAttribute('aria-expanded','false');
+    });
+    if(!isOpen){
+      wrap.classList.add('open');
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+      btn.setAttribute('aria-expanded','true');
+    }
+  });
+  faqList.appendChild(wrap);
+});
+
+// ---------- Pricing buttons → Stripe Payment Links ----------
+// Paste your Stripe Payment Link URLs below (Dashboard → Payment Links).
+// Leave as "" to keep the placeholder "not connected" behavior.
+// ---------- Back to School Sale countdown (real date, not fake urgency) ----------
+(function(){
+  const SALE_END = new Date('2026-09-20T23:59:59');
+  const now = new Date();
+  const banner = document.getElementById('promoBanner');
+  const daysLeftEl = document.getElementById('daysLeft');
+  const msLeft = SALE_END - now;
+
+  if(msLeft <= 0){
+    // Sale has actually ended — hide the banner instead of showing a stale claim.
+    if(banner) banner.style.display = 'none';
+  } else if(daysLeftEl){
+    const daysLeft = Math.ceil(msLeft / (1000 * 60 * 60 * 24));
+    daysLeftEl.textContent = ` (${daysLeft} day${daysLeft === 1 ? '' : 's'} left)`;
+  }
+})();
+
+const STRIPE_LINKS = {
+  monthly: "",     // e.g. "https://buy.stripe.com/xxxxx_monthly"
+  lifetime: "",    // e.g. "https://buy.stripe.com/xxxxx_lifetime"
+  democourse: ""   // e.g. "https://buy.stripe.com/xxxxx_democourse"
+};
+
+document.querySelectorAll('[data-plan]').forEach(btn => {
+  const plan = btn.dataset.plan;
+  const link = STRIPE_LINKS[plan];
+  if(link){
+    btn.setAttribute('href', link);
+    // real Stripe-hosted checkout — no preventDefault, no placeholder text
+    return;
+  }
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const original = btn.textContent;
+    btn.textContent = 'Checkout not connected yet';
+    setTimeout(() => { btn.textContent = original; }, 2200);
+  });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Dashboard — SAT Angel</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Cpath d='M13 1 L15.2 10.8 L25 13 L15.2 15.2 L13 25 L10.8 15.2 L1 13 L10.8 10.8 Z' fill='%23E7B85C'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep:#0B1229; --navy:#121A3A; --card:#182352; --card-light:#1F2C63;
+    --sky:#6FB8E8; --sky-soft:#BFE1F7; --gold:#E7B85C; --gold-soft:#F4D999;
+    --amber:#F0A202; --emerald:#3FBE8C; --rose:#E08585;
+    --paper:#F3F5FB; --paper-dim:#A9B2D4; --line:rgba(243,245,251,0.12);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--navy-deep); color:var(--paper); font-family:'Inter',sans-serif; line-height:1.5;}
+  h1,h2,h3{font-family:'Fraunces',serif; font-weight:600; margin:0 0 0.4em;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  a{color:inherit; text-decoration:none;}
+  button{font-family:'Inter',sans-serif;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 20px;}
+
+  header{position:sticky; top:0; z-index:40; background:rgba(11,18,41,0.9); backdrop-filter:blur(10px); border-bottom:1px solid var(--line);}
+  nav{display:flex; align-items:center; justify-content:space-between; padding:14px 20px; max-width:1080px; margin:0 auto;}
+  .brand{display:flex; align-items:center; gap:9px; font-family:'Fraunces',serif; font-weight:600; font-size:1.05rem;}
+  .navlinks{display:flex; gap:8px; align-items:center;}
+  .navlink{font-size:0.85rem; color:var(--paper-dim); padding:8px 14px; border-radius:8px; cursor:pointer; border:none; background:none;}
+  .navlink.active{background:var(--card); color:var(--paper);}
+  .btn{font-weight:700; font-size:0.88rem; padding:11px 18px; border-radius:9px; border:1px solid transparent; cursor:pointer; display:inline-flex; align-items:center; gap:7px;}
+  .btn-primary{background:linear-gradient(135deg,var(--gold),var(--amber)); color:#2A1B00;}
+  .btn-ghost{background:var(--card); border-color:var(--line); color:var(--paper);}
+  .btn-sm{padding:8px 14px; font-size:0.8rem;}
+  .btn:disabled{opacity:0.5; cursor:default;}
+
+  main{padding:36px 20px 80px;}
+  .page-head{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:28px; flex-wrap:wrap; gap:14px;}
+  .page-head p{color:var(--paper-dim); margin:4px 0 0; font-size:0.92rem;}
+
+  /* Overview cards */
+  .overview-grid{display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:16px; margin-bottom:32px;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:24px;}
+  .card-label{font-family:'IBM Plex Mono',monospace; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--paper-dim); margin-bottom:12px;}
+  .score-row{display:flex; align-items:baseline; gap:16px; flex-wrap:wrap;}
+  .score-big{font-family:'Fraunces',serif; font-size:2.6rem; color:var(--gold-soft);}
+  .score-range{color:var(--paper-dim); font-size:0.85rem;}
+  .target-row{display:flex; align-items:center; gap:10px; margin-top:14px; flex-wrap:wrap;}
+  .target-row input{background:var(--navy); border:1px solid var(--line); color:var(--paper); border-radius:8px; padding:8px 10px; width:90px; font-family:'IBM Plex Mono',monospace; font-size:0.9rem;}
+  .target-row label{font-size:0.82rem; color:var(--paper-dim);}
+  .gap-note{margin-top:10px; font-size:0.82rem; color:var(--sky-soft);}
+  .accuracy-big{font-family:'Fraunces',serif; font-size:2.6rem;}
+  .bar-bg{height:8px; background:var(--navy); border-radius:999px; overflow:hidden; margin-top:14px;}
+  .bar-fill{height:100%; background:linear-gradient(90deg,var(--sky),var(--emerald)); border-radius:999px; transition:width .4s;}
+  .empty-note{color:var(--paper-dim); font-size:0.88rem;}
+
+  /* Weak topics */
+  .weak-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px;}
+  .weak-item{display:flex; justify-content:space-between; align-items:center; font-size:0.88rem;}
+  .weak-item .topic{color:var(--paper);}
+  .weak-item .pct{font-family:'IBM Plex Mono',monospace; color:var(--rose); font-size:0.82rem;}
+  .weak-item .pct.ok{color:var(--emerald);}
+
+  /* Module selector */
+  .modules{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:36px;}
+  .module{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:22px; display:flex; flex-direction:column; gap:10px; position:relative;}
+  .module h3{font-size:1rem; margin:0;}
+  .module p{color:var(--paper-dim); font-size:0.85rem; margin:0; flex-grow:1;}
+  .module .tag{font-family:'IBM Plex Mono',monospace; font-size:0.68rem; color:var(--sky-soft); text-transform:uppercase; letter-spacing:0.05em;}
+  .module .soon{position:absolute; top:16px; right:16px; font-family:'IBM Plex Mono',monospace; font-size:0.66rem; background:rgba(169,178,212,0.15); color:var(--paper-dim); padding:3px 9px; border-radius:999px;}
+
+  /* Topic picker (for targeted practice) */
+  .topic-picker{display:none; flex-wrap:wrap; gap:8px; margin-top:6px;}
+  .topic-picker.show{display:flex;}
+  .topic-chip{font-family:'IBM Plex Mono',monospace; font-size:0.72rem; padding:6px 12px; border-radius:999px; border:1px solid var(--line); background:var(--navy); color:var(--paper-dim); cursor:pointer;}
+  .topic-chip.active{background:var(--gold); border-color:var(--gold); color:#2A1B00;}
+
+  /* Test interface */
+  #testView{display:none;}
+  #testView.show{display:block;}
+  #dashboardView.hide{display:none;}
+
+  .test-topbar{display:flex; align-items:center; justify-content:space-between; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px 18px; margin-bottom:18px; flex-wrap:wrap; gap:12px;}
+  .test-topbar .left{display:flex; align-items:center; gap:14px;}
+  .exit-link{font-size:0.82rem; color:var(--paper-dim); cursor:pointer;}
+  .timer-display{font-family:'IBM Plex Mono',monospace; font-size:0.95rem; background:var(--navy); padding:7px 14px; border-radius:8px; letter-spacing:0.03em;}
+  .timer-display.hidden-timer{filter:blur(6px); user-select:none;}
+  .test-topbar .right{display:flex; gap:8px; align-items:center;}
+  .icon-btn{background:var(--navy); border:1px solid var(--line); color:var(--paper-dim); border-radius:8px; padding:8px 12px; font-size:0.78rem; cursor:pointer; display:flex; align-items:center; gap:6px;}
+  .icon-btn.on{background:rgba(231,184,92,0.15); border-color:var(--gold); color:var(--gold-soft);}
+
+  .navigator{display:flex; flex-wrap:wrap; gap:7px; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin-bottom:18px;}
+  .nav-dot{width:32px; height:32px; border-radius:8px; background:var(--navy); border:1px solid var(--line); color:var(--paper-dim); font-family:'IBM Plex Mono',monospace; font-size:0.78rem; display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative;}
+  .nav-dot.current{border-color:var(--sky-soft); color:var(--sky-soft);}
+  .nav-dot.answered{background:var(--card-light); color:var(--paper);}
+  .nav-dot.flagged::after{content:"🚩"; position:absolute; top:-7px; right:-6px; font-size:0.6rem;}
+
+  .qcard{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:30px;}
+  .qmeta{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;}
+  .qmeta .tag{font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--paper-dim); text-transform:uppercase; letter-spacing:0.06em;}
+  .passage-box{background:var(--navy); border:1px solid var(--line); border-radius:12px; padding:18px 20px; margin-bottom:20px; font-size:0.94rem; line-height:1.65; color:var(--paper-dim); max-height:260px; overflow-y:auto;}
+  .qtext{font-size:1.08rem; margin-bottom:22px;}
+  .choices{display:grid; gap:10px; margin-bottom:18px;}
+  .choice-row{display:flex; align-items:center; gap:10px;}
+  .strike-toggle{width:26px; height:26px; border-radius:6px; border:1px solid var(--line); background:var(--navy); color:var(--paper-dim); font-size:0.68rem; cursor:pointer; flex-shrink:0; display:none; align-items:center; justify-content:center;}
+  .strike-mode .strike-toggle{display:flex;}
+  .choice{flex-grow:1; text-align:left; padding:14px 16px; border-radius:10px; border:1px solid var(--line); background:rgba(243,245,251,0.03); color:var(--paper); cursor:pointer; font-size:0.95rem; display:flex; gap:12px; align-items:center; transition:all .12s;}
+  .choice:hover{border-color:var(--gold-soft);}
+  .choice .letter{font-family:'IBM Plex Mono',monospace; font-size:0.78rem; width:24px; height:24px; border-radius:50%; border:1px solid var(--line); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .choice.correct{border-color:var(--emerald); background:rgba(63,190,140,0.12);}
+  .choice.correct .letter{background:var(--emerald); border-color:var(--emerald); color:#0B1229;}
+  .choice.wrong{border-color:var(--rose); background:rgba(224,133,133,0.1);}
+  .choice.wrong .letter{background:var(--rose); border-color:var(--rose); color:#0B1229;}
+  .choice.struck span:last-child{text-decoration:line-through; opacity:0.45;}
+  .choice[disabled]{cursor:default;}
+
+  .feedback{display:none; padding:16px 18px; border-radius:10px; background:rgba(231,184,92,0.08); border:1px solid rgba(231,184,92,0.3); font-size:0.9rem; color:var(--paper-dim); margin-bottom:16px;}
+  .feedback.show{display:block;}
+  .feedback b{color:var(--gold-soft);}
+  .ai-btn{background:none; border:1px dashed var(--sky-soft); color:var(--sky-soft); font-size:0.8rem; padding:8px 14px; border-radius:8px; cursor:pointer; margin-top:10px; display:inline-flex; align-items:center; gap:6px;}
+  .ai-response{margin-top:12px; font-size:0.88rem; color:var(--paper); background:var(--navy); border-radius:8px; padding:12px 14px; display:none;}
+  .ai-response.show{display:block;}
+
+  .qcard-foot{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;}
+  .qcard-foot .left-actions{display:flex; gap:8px;}
+
+  /* Feedback effects */
+  #fxCanvas{position:fixed; inset:0; z-index:200; pointer-events:none;}
+  #wrongPulse{
+    position:fixed; inset:0; z-index:199; pointer-events:none; opacity:0;
+    background:radial-gradient(ellipse at center, transparent 40%, rgba(224,133,133,0.22) 100%);
+    transition:opacity 0.15s ease-out;
+  }
+  #wrongPulse.pulse{ opacity:1; transition:opacity 0.05s ease-out; }
+  @keyframes correctPop{ 0%{transform:scale(1);} 35%{transform:scale(1.035);} 100%{transform:scale(1);} }
+  @keyframes wrongShake{ 0%,100%{transform:translateX(0);} 20%{transform:translateX(-6px);} 40%{transform:translateX(5px);} 60%{transform:translateX(-3px);} 80%{transform:translateX(2px);} }
+  .choice.correct{ animation:correctPop 0.35s ease-out; }
+  .choice.wrong{ animation:wrongShake 0.35s ease-out; }
+
+  /* Scroll-reveal: elements pop up into view as they enter the viewport */
+  .reveal{
+    opacity:0; transform:translateY(28px) scale(0.98);
+    transition:opacity 0.55s cubic-bezier(.16,.84,.44,1), transform 0.55s cubic-bezier(.16,.84,.44,1);
+  }
+  .reveal.revealed{ opacity:1; transform:translateY(0) scale(1); }
+  .overview-grid .card:nth-child(1){ transition-delay:0s; }
+  .overview-grid .card:nth-child(2){ transition-delay:0.08s; }
+  .overview-grid .card:nth-child(3){ transition-delay:0.16s; }
+  .modules .module:nth-child(1){ transition-delay:0s; }
+  .modules .module:nth-child(2){ transition-delay:0.08s; }
+  .modules .module:nth-child(3){ transition-delay:0.16s; }
+  @media (prefers-reduced-motion: reduce){
+    .reveal, .reveal.revealed{ opacity:1 !important; transform:none !important; transition:none !important; }
+  }
+
+  @media (max-width:800px){
+    .overview-grid{grid-template-columns:1fr;}
+    .modules{grid-template-columns:1fr;}
+    .navlinks{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="fxCanvas"></canvas>
+<div id="wrongPulse"></div>
+
+<header>
+  <nav>
+    <a href="index.html" class="brand">
+      <svg width="22" height="22" viewBox="0 0 26 26" fill="none"><path d="M13 1 L15.2 10.8 L25 13 L15.2 15.2 L13 25 L10.8 15.2 L1 13 L10.8 10.8 Z" fill="#E7B85C"/></svg>
+      SAT Angel
+    </a>
+    <div class="navlinks">
+      <button class="navlink active">Dashboard</button>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <span id="accountWidget" style="font-size:0.82rem; color:var(--paper-dim);"></span>
+      <a href="index.html" class="btn btn-ghost btn-sm">← Back to site</a>
+    </div>
+  </nav>
+</header>
+
+<main class="wrap">
+
+  <div id="dashboardView">
+    <div class="page-head">
+      <div>
+        <h1 style="font-size:1.8rem;">Your progress</h1>
+        <p>Estimates update automatically as you practice — this is a live view of your own attempt history, stored on this device.</p>
+      </div>
+    </div>
+
+    <div class="overview-grid">
+      <div class="card reveal">
+        <div class="card-label">Estimated score</div>
+        <div id="scoreBlock">
+          <p class="empty-note">Answer a few questions to generate your first estimate.</p>
+        </div>
+        <div class="target-row">
+          <label for="targetInput">Target score</label>
+          <input type="number" id="targetInput" min="400" max="1600" step="10" placeholder="1400">
+        </div>
+        <div class="gap-note" id="gapNote"></div>
+      </div>
+
+      <div class="card reveal">
+        <div class="card-label">Overall accuracy</div>
+        <div id="accuracyBlock">
+          <p class="empty-note">No attempts yet.</p>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <div class="card-label">Weakest topics</div>
+        <ul class="weak-list" id="weakList">
+          <li class="empty-note" style="list-style:none;">Practice a few questions to surface weak spots.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2 class="reveal" style="font-size:1.3rem; margin-bottom:16px;">Start a session</h2>
+    <div class="modules">
+      <div class="module reveal">
+        <span class="tag" id="diagnosticTag">9 questions · one per skill area</span>
+        <h3>Diagnostic Quiz</h3>
+        <p>A quick mixed-section check to establish your baseline across Math, Reading, and Writing.</p>
+        <div class="topic-picker show" id="lengthPicker">
+          <button class="topic-chip active" data-len="9">9</button>
+          <button class="topic-chip" data-len="15">15</button>
+          <button class="topic-chip" data-len="20">20</button>
+          <button class="topic-chip" data-len="25">25</button>
+          <button class="topic-chip" data-len="30">30</button>
+        </div>
+        <button class="btn btn-primary btn-sm" data-mode="diagnostic">Start diagnostic</button>
+      </div>
+      <div class="module reveal">
+        <span class="tag">Choose a topic</span>
+        <h3>Targeted Skill Practice</h3>
+        <p>Drill one weak topic at a time until it stops being weak.</p>
+        <div class="topic-picker" id="topicPicker"></div>
+        <button class="btn btn-primary btn-sm" data-mode="targeted" id="startTargeted" disabled>Select a topic above</button>
+      </div>
+      <div class="module reveal">
+        <span class="soon">Coming soon</span>
+        <span class="tag">Full-length · timed</span>
+        <h3>Full Mock Test</h3>
+        <p>A complete, timed simulation of the Digital SAT. In active development — not available yet.</p>
+        <button class="btn btn-ghost btn-sm" disabled>Not available yet</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="testView">
+    <div class="test-topbar">
+      <div class="left">
+        <span class="exit-link" id="exitBtn">← Exit to dashboard</span>
+        <span class="timer-display mono" id="timerDisplay">00:00</span>
+      </div>
+      <div class="right">
+        <button class="icon-btn" id="timerToggle">👁 Hide timer</button>
+        <button class="icon-btn" id="strikeToggle">Abc Strikeout</button>
+        <button class="icon-btn" id="flagBtn">🚩 Flag for review</button>
+      </div>
+    </div>
+
+    <div class="navigator" id="navigator"></div>
+
+    <div class="qcard" id="qcard"></div>
+  </div>
+
+</main>
+
+<script>
+// =========================================================
+// Feedback effects — a burst of green particles for correct answers,
+// a brief subtle red ambient pulse around the screen edges for wrong ones.
+// Respects prefers-reduced-motion.
+// =========================================================
+const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fxCanvas = document.getElementById('fxCanvas');
+const fxCtx = fxCanvas.getContext('2d');
+let fxParticles = [];
+let fxRunning = false;
+
+function resizeFxCanvas(){
+  fxCanvas.width = window.innerWidth;
+  fxCanvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeFxCanvas);
+resizeFxCanvas();
+
+function triggerConfetti(originEl){
+  if(REDUCED_MOTION) return;
+  const rect = originEl ? originEl.getBoundingClientRect() : { left: window.innerWidth/2, top: window.innerHeight/2, width:0, height:0 };
+  const originX = rect.left + rect.width/2;
+  const originY = rect.top + rect.height/2;
+  const colors = ['#3FBE8C','#6FC2AC','#8fe0bd','#2f9e73'];
+
+  for(let i=0;i<46;i++){
+    const angle = Math.random()*Math.PI*2;
+    const speed = 2 + Math.random()*5;
+    fxParticles.push({
+      x: originX, y: originY,
+      vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed - 2,
+      size: 3 + Math.random()*4,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      life: 1,
+      decay: 0.012 + Math.random()*0.012,
+      gravity: 0.12 + Math.random()*0.05,
+      rotation: Math.random()*Math.PI*2,
+      rotSpeed: (Math.random()-0.5)*0.3
+    });
+  }
+  if(!fxRunning) runFxLoop();
+}
+
+function triggerWrongPulse(){
+  if(REDUCED_MOTION) return;
+  const pulse = document.getElementById('wrongPulse');
+  pulse.classList.remove('pulse');
+  void pulse.offsetWidth; // restart animation
+  pulse.classList.add('pulse');
+  setTimeout(() => { pulse.classList.remove('pulse'); }, 550);
+}
+
+function runFxLoop(){
+  fxRunning = true;
+  fxCtx.clearRect(0,0,fxCanvas.width,fxCanvas.height);
+  fxParticles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += p.gravity;
+    p.life -= p.decay;
+    p.rotation += p.rotSpeed;
+  });
+  fxParticles = fxParticles.filter(p => p.life > 0);
+
+  fxParticles.forEach(p => {
+    fxCtx.save();
+    fxCtx.globalAlpha = Math.max(p.life, 0);
+    fxCtx.translate(p.x, p.y);
+    fxCtx.rotate(p.rotation);
+    fxCtx.fillStyle = p.color;
+    fxCtx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+    fxCtx.restore();
+  });
+
+  if(fxParticles.length > 0){
+    requestAnimationFrame(runFxLoop);
+  }else{
+    fxCtx.clearRect(0,0,fxCanvas.width,fxCanvas.height);
+    fxRunning = false;
+  }
+}
+
+// =========================================================
+// Question bank — real content, tagged by section + topic
+// =========================================================
+const QUESTION_BANK = [
+  // ============================================================
+  // MATH — Linear Systems (12)
+  // ============================================================
+  { id:'m1', section:'Math', topic:'Linear Systems',
+    text:"A gym charges a $40 sign-up fee plus $15 per month. A rival gym charges no sign-up fee but $23 per month. After how many months is the total cost the same?",
+    choices:["3 months","4 months","5 months","6 months"], correct:2,
+    explain:"Set 40 + 15m = 23m. Subtract 15m from both sides: 40 = 8m, so m = 5. Check: 40+15(5)=115 and 23(5)=115 — they match." },
+  { id:'m2', section:'Math', topic:'Linear Systems',
+    text:"If 3x + 2y = 16 and x − y = 2, what is the value of x?",
+    choices:["2","3","4","5"], correct:2,
+    explain:"From the second equation, x = y + 2. Substitute: 3(y+2) + 2y = 16 → 5y + 6 = 16 → y = 2. Then x = y + 2 = 4." },
+  { id:'m3', section:'Math', topic:'Linear Systems',
+    text:"A parking garage charges $5 to enter plus $2 per hour. Another garage charges $3 to enter plus $3 per hour. After how many hours do both garages cost the same?",
+    choices:["1 hour","2 hours","3 hours","4 hours"], correct:1,
+    explain:"Set 5 + 2h = 3 + 3h. Subtract 2h and 3 from both sides: 2 = h. Check: 5+2(2)=9 and 3+3(2)=9 — they match." },
+  { id:'m4', section:'Math', topic:'Linear Systems',
+    text:"Twice a number decreased by 7 equals 3 times the number increased by 4. What is the number?",
+    choices:["-11","-4","4","11"], correct:0,
+    explain:"2x − 7 = 3x + 4 → −7 − 4 = 3x − 2x → x = −11." },
+  { id:'m5', section:'Math', topic:'Linear Systems',
+    text:"The sum of two numbers is 24 and their difference is 6. What is the larger number?",
+    choices:["9","12","15","18"], correct:2,
+    explain:"x + y = 24 and x − y = 6. Adding the equations: 2x = 30 → x = 15. The larger number is 15." },
+  { id:'m6', section:'Math', topic:'Linear Systems',
+    text:"A line passes through (2, 5) and (4, 11). What is the slope of the line?",
+    choices:["2","3","4","6"], correct:1,
+    explain:"Slope = (11 − 5)/(4 − 2) = 6/2 = 3." },
+  { id:'m7', section:'Math', topic:'Linear Systems',
+    text:"A phone plan costs $25 plus $0.10 per text. Another plan costs $15 plus $0.15 per text. After how many texts do the two plans cost the same?",
+    choices:["100","150","200","250"], correct:2,
+    explain:"25 + 0.10t = 15 + 0.15t → 10 = 0.05t → t = 200." },
+  { id:'m8', section:'Math', topic:'Linear Systems',
+    text:"If 4x − y = 10 and 2x + y = 8, what is the value of x?",
+    choices:["1","2","3","4"], correct:2,
+    explain:"Adding the two equations eliminates y: 6x = 18 → x = 3." },
+  { id:'m9', section:'Math', topic:'Linear Systems',
+    text:"A line has a slope of −2 and passes through the point (1, 3). What is the y-intercept of the line?",
+    choices:["1","3","5","7"], correct:2,
+    explain:"y = −2x + b. Substitute (1,3): 3 = −2(1) + b → b = 5." },
+  { id:'m10', section:'Math', topic:'Linear Systems',
+    text:"The perimeter of a rectangle is 30. If the length is 3 more than twice the width, what is the width?",
+    choices:["3","4","5","6"], correct:1,
+    explain:"2(L + W) = 30 → L + W = 15. Since L = 2W + 3: (2W+3) + W = 15 → 3W = 12 → W = 4." },
+  { id:'m11', section:'Math', topic:'Linear Systems',
+    text:"Solve for y: 5y − 3(y − 2) = 14",
+    choices:["2","4","6","8"], correct:1,
+    explain:"5y − 3y + 6 = 14 → 2y = 8 → y = 4." },
+  { id:'m12', section:'Math', topic:'Linear Systems',
+    text:"Two numbers have a sum of 50. One number is 4 times the other. What is the smaller number?",
+    choices:["5","10","15","20"], correct:1,
+    explain:"x + 4x = 50 → 5x = 50 → x = 10." },
+
+  // ============================================================
+  // MATH — Advanced Algebra (12)
+  // ============================================================
+  { id:'m13', section:'Math', topic:'Advanced Algebra',
+    text:"If f(x) = 2x² − 3x + 1, what is f(3)?",
+    choices:["8","10","12","16"], correct:1,
+    explain:"f(3) = 2(9) − 3(3) + 1 = 18 − 9 + 1 = 10." },
+  { id:'m14', section:'Math', topic:'Advanced Algebra',
+    text:"What is the sum of the solutions to x² − 4x − 12 = 0?",
+    choices:["-4","2","4","6"], correct:2,
+    explain:"Factor: (x−6)(x+2) = 0, so x = 6 or x = −2. Sum = 4." },
+  { id:'m15', section:'Math', topic:'Advanced Algebra',
+    text:"If g(x) = x² + 6x + 5, what is the product of the roots of g(x) = 0?",
+    choices:["-6","-5","5","6"], correct:2,
+    explain:"Factor: (x+1)(x+5) = 0, so x = −1 or x = −5. Product = (−1)(−5) = 5." },
+  { id:'m16', section:'Math', topic:'Advanced Algebra',
+    text:"If h(x) = 2x − 1, what is h(h(3))?",
+    choices:["5","7","9","11"], correct:2,
+    explain:"h(3) = 2(3) − 1 = 5. Then h(5) = 2(5) − 1 = 9." },
+  { id:'m17', section:'Math', topic:'Advanced Algebra',
+    text:"What is the value of x that satisfies 2^(x+1) = 32?",
+    choices:["3","4","5","6"], correct:1,
+    explain:"32 = 2^5, so x + 1 = 5 → x = 4." },
+  { id:'m18', section:'Math', topic:'Advanced Algebra',
+    text:"If (x − 3)² = 16, which of the following is a possible value of x?",
+    choices:["-1","1","3","5"], correct:0,
+    explain:"x − 3 = ±4, so x = 7 or x = −1. Of the choices given, −1 works." },
+  { id:'m19', section:'Math', topic:'Advanced Algebra',
+    text:"If f(x) = x² − 2x − 8, what is the positive value of x for which f(x) = 0?",
+    choices:["2","4","6","8"], correct:1,
+    explain:"Factor: (x−4)(x+2) = 0, so x = 4 or x = −2. The positive solution is 4." },
+  { id:'m20', section:'Math', topic:'Advanced Algebra',
+    text:"If 3(x − 2) = 2(x + 5), what is the value of x?",
+    choices:["10","12","14","16"], correct:3,
+    explain:"3x − 6 = 2x + 10 → x = 16." },
+  { id:'m21', section:'Math', topic:'Advanced Algebra',
+    text:"The expression (x + 4)(x − 4) is equivalent to:",
+    choices:["x² - 16","x² + 16","x² - 8x - 16","x² + 8x - 16"], correct:0,
+    explain:"This is a difference of squares: (x+4)(x−4) = x² − 16." },
+  { id:'m22', section:'Math', topic:'Advanced Algebra',
+    text:"If x² = 49 and x < 0, what is the value of x?",
+    choices:["-7","-49","7","49"], correct:0,
+    explain:"x = ±7, and since x < 0, x = −7." },
+  { id:'m23', section:'Math', topic:'Advanced Algebra',
+    text:"What is the positive value of k for which x² + kx + 9 = 0 has exactly one solution?",
+    choices:["3","6","9","12"], correct:1,
+    explain:"Exactly one solution means the discriminant is 0: k² − 4(1)(9) = 0 → k² = 36 → k = 6 (taking the positive value)." },
+  { id:'m24', section:'Math', topic:'Advanced Algebra',
+    text:"If f(x) = (x − 1)/(x + 2), what is f(4)?",
+    choices:["1/3","1/2","2/3","3/4"], correct:1,
+    explain:"f(4) = (4−1)/(4+2) = 3/6 = 1/2." },
+
+  // ============================================================
+  // MATH — Data Analysis (12)
+  // ============================================================
+  { id:'m25', section:'Math', topic:'Data Analysis',
+    text:"A data set has a mean of 20 and 5 values. If four of the values are 15, 18, 22, and 25, what is the fifth value?",
+    choices:["18","20","22","25"], correct:1,
+    explain:"Sum of all 5 values = 20 × 5 = 100. Known four sum to 80, so the fifth value is 100 − 80 = 20." },
+  { id:'m26', section:'Math', topic:'Data Analysis',
+    text:"In a survey, 60% of 300 students prefer online classes. How many students is that?",
+    choices:["120","150","180","200"], correct:2,
+    explain:"0.60 × 300 = 180 students." },
+  { id:'m27', section:'Math', topic:'Data Analysis',
+    text:"A jar contains 8 red, 5 blue, and 7 green marbles. If one marble is selected at random, what is the probability it is NOT blue?",
+    choices:["1/4","1/2","3/5","3/4"], correct:3,
+    explain:"Total = 20 marbles, blue = 5. Not blue = 15/20 = 3/4." },
+  { id:'m28', section:'Math', topic:'Data Analysis',
+    text:"What is the median of the data set {12, 7, 15, 9, 21, 7}?",
+    choices:["9","10.5","12","13.5"], correct:1,
+    explain:"Sorted: 7, 7, 9, 12, 15, 21. With 6 values, median is the average of the two middle: (9+12)/2 = 10.5." },
+  { id:'m29', section:'Math', topic:'Data Analysis',
+    text:"A store's revenue increased from $40,000 to $52,000. What is the percent increase?",
+    choices:["20%","24%","30%","33%"], correct:2,
+    explain:"Increase = 12,000. Percent increase = 12,000/40,000 = 30%." },
+  { id:'m30', section:'Math', topic:'Data Analysis',
+    text:"A scatterplot's line of best fit is y = 2.5x + 10. According to this model, what is the predicted value of y when x = 6?",
+    choices:["15","20","25","30"], correct:2,
+    explain:"y = 2.5(6) + 10 = 15 + 10 = 25." },
+  { id:'m31', section:'Math', topic:'Data Analysis',
+    text:"A survey of 250 people found that 40% prefer tea over coffee, and everyone surveyed prefers one or the other. How many people prefer coffee?",
+    choices:["100","120","150","180"], correct:2,
+    explain:"40% prefer tea: 0.40 × 250 = 100. The rest, 250 − 100 = 150, prefer coffee." },
+  { id:'m32', section:'Math', topic:'Data Analysis',
+    text:"What is the mode of the data set {4, 7, 7, 9, 12, 7, 15}?",
+    choices:["4","7","9","12"], correct:1,
+    explain:"7 appears three times, more than any other value, so the mode is 7." },
+  { id:'m33', section:'Math', topic:'Data Analysis',
+    text:"A company's profit grew from $80,000 to $92,000. What is the percent increase, rounded to the nearest percent?",
+    choices:["10%","12%","15%","20%"], correct:2,
+    explain:"Increase = 12,000. Percent increase = 12,000/80,000 = 15%." },
+  { id:'m34', section:'Math', topic:'Data Analysis',
+    text:"In a data set of 9 values, the range is 24 and the minimum value is 8. What is the maximum value?",
+    choices:["16","24","32","40"], correct:2,
+    explain:"Range = maximum − minimum, so maximum = 24 + 8 = 32." },
+  { id:'m35', section:'Math', topic:'Data Analysis',
+    text:"A random sample of 500 voters found that 55% support a proposal. Based on this sample, approximately how many of a population of 20,000 would be expected to support the proposal?",
+    choices:["9,000","10,000","11,000","12,000"], correct:2,
+    explain:"0.55 × 20,000 = 11,000." },
+  { id:'m36', section:'Math', topic:'Data Analysis',
+    text:"A linear model predicts y = −1.5x + 40. According to this model, what is the change in y for every increase of 4 in x?",
+    choices:["-4","-6","-8","-10"], correct:1,
+    explain:"The slope is −1.5, so a 4-unit increase in x changes y by −1.5 × 4 = −6." },
+
+  // ============================================================
+  // READING — Command of Evidence (12)
+  // ============================================================
+  { id:'r1', section:'Reading', topic:'Command of Evidence',
+    passage:"Medieval and Renaissance mapmakers left most of the world blank, yet a curious pattern breaks the emptiness: coiled sea serpents and horned leviathans crowd the margins of uncharted oceans. Historians once read these creatures as mere decoration, evidence of a superstitious age eager to fill silence with spectacle. More recent scholarship complicates that reading. Ship logs from the period show captains routinely warning crews away from specific, named regions, not because of any sighted monster, but because no one aboard had sailed there before. The cartographers, drawing from those same logs, appear to have used the monsters as a kind of visual footnote — a way of marking, without admitting it outright, that this stretch of water remained unknown.",
+    text:"Which choice best supports the claim that the sea-monster illustrations functioned as a signal of unknown territory rather than genuine belief in monsters?",
+    choices:["Historians once read these creatures as mere decoration.","Ship logs from the period show captains routinely warning crews away from specific, named regions.","The cartographers... appear to have used the monsters as a kind of visual footnote... marking... that this stretch of water remained unknown.","Medieval and Renaissance mapmakers left most of the world blank."],
+    correct:2,
+    explain:"The claim is about what the monsters signaled. Only the third choice directly states the monsters marked unknown territory — the others describe context or a prior, now-complicated assumption." },
+  { id:'r2', section:'Reading', topic:'Command of Evidence',
+    passage:"The autogyro, an early cousin of the helicopter, crashed in its first two public demonstrations, killing one test pilot and badly injuring its inventor. Newspapers of the era called it a deathtrap, and insurers refused to cover any aircraft built on the design. Critics were right to worry, but wrong about what mattered: the failures weren't random bad luck, they were the design working exactly as intended, shedding lift in a controlled way that any engineer paying attention could learn from. The same aircraft that had killed a man two years earlier flew a full circuit and landed without incident on its third trial. Its inventor kept meticulous, almost obsessive records throughout, and within a decade the autogyro's core rotor principle was inside every helicopter built.",
+    text:"Which choice best supports the claim that the author views the invention as ultimately beneficial despite its risks?",
+    choices:["The machine failed publicly, twice, before its third and final trial.","Critics were right to worry, but wrong about what mattered.","Its inventor kept meticulous, almost obsessive records.","Newspapers of the era called it a deathtrap."],
+    correct:1,
+    explain:"You need a line that concedes risk while landing on a positive verdict — only this choice does both; the others are neutral facts, not evaluative claims." },
+  { id:'r3', section:'Reading', topic:'Command of Evidence',
+    passage:"A team of nutrition researchers tracked two groups of office workers for six months: one group ate lunch at their desks, the other left the building for a twenty-minute walk before eating. At the study's end, the walking group reported not only lower average stress scores but also fewer sick days taken, despite no significant difference in diet between the two groups. The lead researcher was careful to note that this pattern held even among participants who disliked walking at the study's outset, suggesting the effect was not simply a matter of who already preferred to be active.",
+    text:"Which choice best supports the claim that the observed benefit was not just a product of participants' existing preferences?",
+    choices:["The walking group reported lower average stress scores.","This pattern held even among participants who disliked walking at the study's outset.","There was no significant difference in diet between the two groups.","Researchers tracked two groups of office workers for six months."],
+    correct:1,
+    explain:"The claim is specifically about ruling out pre-existing preference as the explanation. Only this choice directly addresses that by noting the effect held even for people who disliked walking." },
+  { id:'r4', section:'Reading', topic:'Command of Evidence',
+    passage:"City beekeeping associations often justify rooftop hives by pointing to local honey sales, but the numbers rarely support beekeeping as a standalone business: a single urban hive produces, on average, barely enough honey to cover the cost of the beekeeper's protective equipment in a given year. The real case for urban apiaries, several agricultural economists now argue, lies elsewhere — in the measurable increase in fruit and vegetable yields at community gardens located within a hive's typical foraging radius.",
+    text:"Which choice best supports the claim that honey production alone does not justify urban beekeeping economically?",
+    choices:["A single urban hive produces, on average, barely enough honey to cover the cost of the beekeeper's protective equipment.","There is a measurable increase in fruit and vegetable yields at nearby community gardens.","Several agricultural economists now argue this point.","City beekeeping associations often justify rooftop hives by pointing to local honey sales."],
+    correct:0,
+    explain:"The claim is about honey production specifically failing to justify the economics. Only this choice gives a direct cost comparison showing honey alone doesn't pay for itself." },
+  { id:'r5', section:'Reading', topic:'Command of Evidence',
+    passage:"Modern concrete structures often crumble within a century, while Roman harbor concrete, submerged in seawater for two thousand years, has in some cases grown stronger over time. For decades, engineers assumed this durability came from some lost Roman recipe. Recent mineralogical analysis instead points to a specific manufacturing choice: Roman builders mixed in chunks of unslaked lime that reacted slowly with seawater over centuries, continuously healing microcracks as they formed — a process modern concrete's more thoroughly processed ingredients don't allow.",
+    text:"Which choice best supports the claim that Roman concrete's durability came from a specific manufacturing choice rather than a mysterious lost recipe?",
+    choices:["Modern concrete structures often crumble within a century.","Roman harbor concrete has in some cases grown stronger over time.","Roman builders mixed in chunks of unslaked lime that reacted slowly with seawater, continuously healing microcracks.","For decades, engineers assumed this durability came from some lost Roman recipe."],
+    correct:2,
+    explain:"Only this choice identifies the specific mechanism (the unslaked lime reaction) that explains the durability — the others describe the mystery or the outcome, not the cause." },
+  { id:'r6', section:'Reading', topic:'Command of Evidence',
+    passage:"The popular notion that elite chess players are simply born with a rare gift persists despite mounting evidence to the contrary. A study tracking junior players over eight years found that the strongest predictor of eventual grandmaster status was not any early rating advantage, but total hours of focused, error-corrected practice — players who reviewed and understood their losses progressed roughly twice as fast as equally talented peers who simply played more games without such review.",
+    text:"Which choice best supports the claim that raw talent alone does not predict chess mastery?",
+    choices:["The popular notion that elite players are born with a rare gift persists.","The strongest predictor of eventual grandmaster status was not any early rating advantage, but total hours of focused, error-corrected practice.","A study tracked junior players over eight years.","Players who simply played more games without review progressed more slowly."],
+    correct:1,
+    explain:"This choice most directly states that something other than an early talent indicator (rating advantage) was the actual predictor of mastery." },
+  { id:'r7', section:'Reading', topic:'Command of Evidence',
+    passage:"Urban noise pollution has forced many city-dwelling birds to sing at a higher pitch than their rural counterparts, a shift researchers once assumed was a simple adaptation to be heard over traffic. A multi-year study comparing recordings from the same species across forty cities found that birds in the noisiest districts didn't just sing higher — they also sang shorter phrases and increased their song's tempo, changes that low-frequency traffic noise alone doesn't explain.",
+    text:"Which choice best supports the claim that pitch shift is not the only adaptation urban birds make to noise?",
+    choices:["Urban noise pollution has forced many birds to sing at a higher pitch.","Researchers once assumed pitch shift was a simple adaptation to be heard over traffic.","Birds in the noisiest districts also sang shorter phrases and increased their song's tempo.","A study compared recordings from the same species across forty cities."],
+    correct:2,
+    explain:"The claim needs evidence of additional changes beyond pitch; only this choice names those extra changes (phrase length, tempo)." },
+  { id:'r8', section:'Reading', topic:'Command of Evidence',
+    passage:"City engineers initially attributed a bridge's persistent vibration to heavy truck traffic and recommended a weight limit as the fix. After the weight limit produced no measurable change over six months, inspectors discovered the vibration instead tracked closely with a nearby subway line's train schedule, appearing every 90 seconds regardless of surface traffic volume.",
+    text:"Which choice best supports the claim that the vibration was more closely linked to subway activity than to truck traffic?",
+    choices:["City engineers initially attributed the vibration to heavy truck traffic.","Engineers recommended a weight limit as the fix.","The weight limit produced no measurable change over six months.","The vibration tracked closely with a nearby subway line's train schedule, appearing every 90 seconds regardless of surface traffic."],
+    correct:3,
+    explain:"Only this choice directly ties the vibration's pattern to subway activity rather than traffic, which is what the claim requires." },
+  { id:'r9', section:'Reading', topic:'Command of Evidence',
+    passage:"Farmers downwind of a major wildfire initially worried that ash deposits would poison their soil, but three seasons of soil testing found ash-related contamination well within safe limits. What farmers had not anticipated was a smoke-related effect on the crops themselves: diffused sunlight during smoky weeks, rather than direct sun, appears to have increased yields in several shade-tolerant varieties by reducing heat stress during the hottest part of the season.",
+    text:"Which choice best supports the claim that the wildfire affected crop yield through a mechanism other than soil contamination?",
+    choices:["Farmers worried that ash deposits would poison their soil.","Soil testing found ash-related contamination well within safe limits.","Diffused sunlight during smoky weeks appears to have increased yields by reducing heat stress.","Some crop varieties are more shade-tolerant than others."],
+    correct:2,
+    explain:"Only this choice describes an actual mechanism (diffused sunlight reducing heat stress) unrelated to soil contamination." },
+  { id:'r10', section:'Reading', topic:'Command of Evidence',
+    passage:"A popular language-learning app markets its short, gamified daily lessons as more effective than traditional classroom instruction. Internal company data shows high daily engagement, with most users completing a lesson within minutes of opening the app. However, an independent university study following the same users over eighteen months found that only 12% reached conversational proficiency, compared to 34% of students in a traditional weekly classroom course over the same period.",
+    text:"Which choice best supports the claim that high engagement with the app did not translate into strong learning outcomes?",
+    choices:["The app markets its lessons as more effective than classroom instruction.","Internal company data shows high daily engagement.","Only 12% of app users reached conversational proficiency, compared to 34% of classroom students.","Most users completed a lesson within minutes of opening the app."],
+    correct:2,
+    explain:"This is the only choice that directly compares actual learning outcomes between the two groups, showing the app underperformed despite high engagement." },
+  { id:'r11', section:'Reading', topic:'Command of Evidence',
+    passage:"For over a century, maritime historians assumed a merchant ship lost in 1721 had sunk far offshore, based on the captain's last reported position in his logbook. When wreckage was finally located in 2019, it was found less than two miles from shore, in shallow water that should have been visible from land — evidence, researchers now argue, that the logbook's final entry was altered, likely to protect the captain's reputation after a navigational error.",
+    text:"Which choice best supports the claim that the ship's logbook entry may have been deliberately altered?",
+    choices:["Maritime historians assumed the ship had sunk far offshore.","Wreckage was finally located in 2019.","The wreckage was found less than two miles from shore, in shallow water that should have been visible from land.","Researchers now argue the entry was altered."],
+    correct:2,
+    explain:"Only this choice gives the actual physical evidence — the wreck's real location contradicting the logged position — that supports the claim of alteration." },
+  { id:'r12', section:'Reading', topic:'Command of Evidence',
+    passage:"Public health officials long assumed that providing more statistical information about vaccine safety would reduce hesitancy. A controlled study testing this assumption found that presenting hesitant parents with additional statistics had no measurable effect on their decisions. What did shift decisions, in the same study, was a short video featuring a pediatrician known personally to several families in the community, which increased vaccination rates by nearly 20 percentage points among the group who viewed it.",
+    text:"Which choice best supports the claim that statistical information alone was not effective at reducing vaccine hesitancy in this study?",
+    choices:["Public health officials long assumed statistics would reduce hesitancy.","Presenting hesitant parents with additional statistics had no measurable effect on their decisions.","A short video featuring a familiar pediatrician increased vaccination rates by nearly 20 percentage points.","The pediatrician was known personally to several families in the community."],
+    correct:1,
+    explain:"Only this choice directly states the outcome of the statistics-only intervention: no measurable effect." },
+
+  // ============================================================
+  // READING — Craft and Structure (12)
+  // ============================================================
+  { id:'r13', section:'Reading', topic:'Craft and Structure',
+    passage:"The committee's final report noted, with unusual bluntness, that the merger talks had been proceeding calmly for months until a single leaked memo precipitated the crisis that ultimately dissolved the deal. Within seventy-two hours of the leak, three board members had resigned and the target company's stock had dropped eleven percent.",
+    text:"As used in the passage, the word \u201cprecipitate\u201d most nearly means:",
+    choices:["a form of rainfall","to bring about suddenly","a chemical solid","to hesitate"],
+    correct:1,
+    explain:"In context describing an event that 'precipitated the crisis,' the word functions as a verb meaning to cause something to happen abruptly — not the chemistry or weather sense." },
+  { id:'r14', section:'Reading', topic:'Craft and Structure',
+    passage:"Photosynthesis converts light energy into chemical energy through a sequence of reactions occurring within the thylakoid membrane, ultimately fixing carbon dioxide into glucose via the Calvin cycle. I did not understand any of this, not really, until the summer I spent watering my grandmother's tomato plants and noticed that the ones on her shaded porch grew pale and reluctant, while the ones by the open window turned a green so deep it looked painted on.",
+    text:"The author's shift from formal, technical language in the first sentence to a personal anecdote afterward primarily serves to:",
+    choices:["undermine the credibility of the technical claims.","make an abstract concept feel concrete and relatable.","introduce a contradictory viewpoint.","signal the end of the argument."],
+    correct:1,
+    explain:"A structural shift toward anecdote after technical explanation is a classic move to ground an abstract idea in something the reader can picture — not to contradict or undercut it." },
+  { id:'r15', section:'Reading', topic:'Craft and Structure',
+    passage:"After the factory closed, the town council adopted an austere budget, cutting the library's hours, deferring road repairs, and freezing all non-essential hiring for three consecutive years.",
+    text:"As used in the passage, \u201caustere\u201d most nearly means:",
+    choices:["elegant and refined","strict and minimal","loud and chaotic","generous and open-handed"],
+    correct:1,
+    explain:"The examples that follow — cutting hours, deferring repairs, freezing hiring — all describe a strict, bare-bones budget, matching 'strict and minimal.'" },
+  { id:'r16', section:'Reading', topic:'Craft and Structure',
+    passage:"The essay opens with a vivid description of a single overflowing landfill before zooming out, paragraph by paragraph, to city-wide waste statistics, then national trends, and finally a proposal for a policy fix at the federal level.",
+    text:"The overall structure of the passage moves primarily from:",
+    choices:["general policy to a single specific example.","a specific example to increasingly broader context and a general proposal.","one historical era to another.","an argument to its refutation."],
+    correct:1,
+    explain:"The passage explicitly moves from one landfill (specific) outward to city, national, and federal scope (broader), ending in a proposal — matching only the second choice." },
+  { id:'r17', section:'Reading', topic:'Craft and Structure',
+    passage:"Before publishing a single measurement, the astronomer cross-checked her data against three independent telescopes, a level of meticulous verification that colleagues later credited with catching an error the original observatory had missed.",
+    text:"As used in the passage, \u201cmeticulous\u201d most nearly means:",
+    choices:["careless","extremely careful and precise","rapid","confident"],
+    correct:1,
+    explain:"Cross-checking against three independent sources before publishing describes an extremely careful, precise process." },
+  { id:'r18', section:'Reading', topic:'Craft and Structure',
+    passage:"Restaurant reviews rarely mention the kitchen's supply chain, yet a diner's $40 entrée often depends on a fisherman three time zones away accepting a price set the previous winter. This sentence appears in an essay that otherwise focuses on plating and presentation.",
+    text:"The primary purpose of the quoted sentence within the essay is to:",
+    choices:["criticize restaurant reviewers for poor writing.","introduce an overlooked economic dimension the rest of the essay does not otherwise address.","summarize the essay's main argument.","provide a transition to a discussion of seafood recipes."],
+    correct:1,
+    explain:"The sentence points out something (supply-chain economics) that contrasts with the essay's stated usual focus (plating and presentation) — introducing an overlooked angle." },
+  { id:'r19', section:'Reading', topic:'Craft and Structure',
+    passage:"The senator's speech was notable for its candor; rather than deflecting questions about the failed policy, she detailed exactly which assumptions had proven wrong and why.",
+    text:"As used in the passage, \u201ccandor\u201d most nearly means:",
+    choices:["confusion","honesty","anger","hesitation"],
+    correct:1,
+    explain:"Detailing exactly what went wrong, rather than deflecting, is a description of honesty/frankness." },
+  { id:'r20', section:'Reading', topic:'Craft and Structure',
+    passage:"The article begins by describing a single beekeeper's failing hives in vivid, almost narrative detail, then pulls back to cite regional pollinator decline data, and closes by returning to that same beekeeper, now several years later, describing a hive that has recovered.",
+    text:"The overall structure of the passage can best be described as:",
+    choices:["a chronological list of unrelated events.","a specific narrative that frames broader data, then returns to that same narrative.","two competing arguments presented without resolution.","a technical report followed by an unrelated anecdote."],
+    correct:1,
+    explain:"The passage opens and closes with the same beekeeper's story, using it to frame the data in between — matching only the second choice." },
+  { id:'r21', section:'Reading', topic:'Craft and Structure',
+    passage:"Despite the committee's lukewarm initial response, the proposal gained unexpected traction after a single influential board member voiced enthusiastic support.",
+    text:"As used in the passage, \u201ctraction\u201d most nearly means:",
+    choices:["physical grip on a surface","growing support or momentum","financial cost","official rejection"],
+    correct:1,
+    explain:"In context of a proposal gaining ground after a lukewarm start, 'traction' refers to growing support, not the literal physical sense." },
+  { id:'r22', section:'Reading', topic:'Craft and Structure',
+    passage:"Most articles about deep-sea exploration focus on rare, spectacular creatures. The following sentence, however, appears in an essay that instead spends most of its length describing the mundane, repetitive work of cataloguing sediment samples: 'The glamorous discoveries make headlines, but ninety percent of a research cruise is spent doing something closer to inventory than adventure.'",
+    text:"The primary function of the quoted sentence within the essay is to:",
+    choices:["criticize deep-sea researchers for exaggerating their findings.","acknowledge a popular expectation before contrasting it with the essay's actual focus.","summarize the essay's central argument about ocean conservation.","introduce a new character into the narrative."],
+    correct:1,
+    explain:"The sentence names the popular image (glamorous discoveries) and then pivots to the essay's real subject (routine inventory work) — acknowledging expectation, then contrasting it." },
+  { id:'r23', section:'Reading', topic:'Craft and Structure',
+    passage:"The negotiations, which had dragged on for eighteen months, finally reached a resolution only after both parties agreed to a temporary compromise on the most contentious clause.",
+    text:"As used in the passage, \u201ccontentious\u201d most nearly means:",
+    choices:["widely agreed upon","likely to cause disagreement","financially significant","recently added"],
+    correct:1,
+    explain:"A clause requiring a compromise to resolve eighteen months of dragged-out negotiation is one likely to cause disagreement." },
+  { id:'r24', section:'Reading', topic:'Craft and Structure',
+    passage:"The report opens with three paragraphs of dense statistical analysis before shifting, in its final section, to a single paragraph describing one family's experience with the housing shortage the statistics describe.",
+    text:"The shift in the report's final paragraph primarily serves to:",
+    choices:["undermine the credibility of the statistics presented earlier.","provide a human-scale illustration of the trend the data describes.","introduce a counterargument to the report's thesis.","conclude with a call for more statistical research."],
+    correct:1,
+    explain:"Moving from statistics to one family's specific experience is a classic move to illustrate a trend on a human scale, not to undercut or contradict the data." },
+
+  // ============================================================
+  // READING — Central Ideas (12)
+  // ============================================================
+  { id:'r25', section:'Reading', topic:'Central Ideas',
+    passage:"Ada Lovelace is remembered today, when she is remembered at all, as a footnote to Charles Babbage's Analytical Engine — the mathematician's daughter who wrote some notes. Those notes, however, contain what many historians now consider the first published algorithm intended to be carried out by a machine, along with Lovelace's own prediction, decades ahead of its time, that such a machine might one day compose music or manipulate more than numbers. Babbage's engine was never built in his lifetime; Lovelace's insight into what a general-purpose computing machine might become outlived both the engine and, for over a century, the credit she was due for imagining it.",
+    text:"Which choice best states the main purpose of the passage?",
+    choices:["To argue that a historical figure has been unfairly forgotten.","To compare two competing scientific theories in detail.","To describe the steps of a specific experiment.","To criticize a widely-held misconception."],
+    correct:0,
+    explain:"When most of the passage's evidence builds toward restoring recognition to a specific person, the main purpose is the argument for their overlooked significance." },
+  { id:'r26', section:'Reading', topic:'Central Ideas',
+    passage:"In 1854, a London physician named John Snow proposed, against the medical consensus of his day, that cholera spread through contaminated water rather than foul air. Snow's map tracing cases back to a single water pump on Broad Street was dismissed by most of his peers, who continued to favor the airborne 'miasma' theory for another two decades. It was not until the 1880s, when Robert Koch isolated the cholera bacterium itself, that Snow's water-based theory was fully vindicated.",
+    text:"The passage as a whole is primarily concerned with:",
+    choices:["explaining why an early prediction ultimately proved correct.","cataloguing every failed attempt at a solution.","the biography of the passage's central subject.","comparing two eras exclusively by their technology."],
+    correct:0,
+    explain:"When most of the passage returns to how the initial claim was eventually validated, that's the passage's central concern." },
+  { id:'r27', section:'Reading', topic:'Central Ideas',
+    passage:"When a small-town library began digitizing its local newspaper archive, staff expected a modest research tool for genealogists. Instead, within a year the digitized archive had been cited in three academic papers, sparked a local history podcast, and prompted the town to reconsider a decades-old zoning dispute using evidence unearthed from 1950s issues. What began as a preservation project became, almost by accident, a catalyst for present-day civic debate.",
+    text:"Which choice best states the main idea of the passage?",
+    choices:["Digitizing old newspapers is prohibitively expensive for small libraries.","A preservation effort had unexpected and significant effects beyond its original purpose.","Genealogists are the primary users of digitized newspaper archives.","Zoning disputes are usually resolved using historical evidence."],
+    correct:1,
+    explain:"The passage's throughline is that a modest, narrowly-purposed project ended up mattering far beyond its original scope." },
+  { id:'r28', section:'Reading', topic:'Central Ideas',
+    passage:"Coral bleaching is often reported as a single catastrophic event, but recent long-term monitoring tells a more complicated story: some reefs that bleached severely have partially recovered within a decade, while others nearby, exposed to similar temperatures, have not recovered at all. Researchers now suspect that a reef's genetic diversity, not just the severity of the heat event, determines whether it rebounds.",
+    text:"The passage is primarily concerned with:",
+    choices:["arguing that coral bleaching is irreversible.","complicating a simple narrative about coral bleaching by pointing to a factor besides heat severity.","describing the process of coral bleaching in detail.","criticizing researchers for focusing on the wrong reefs."],
+    correct:1,
+    explain:"The passage explicitly moves from a simple story (bleaching = catastrophe) to a more complicated one involving genetic diversity as an additional factor." },
+  { id:'r29', section:'Reading', topic:'Central Ideas',
+    passage:"The company originally built a niche tool for tracking warehouse inventory, but a handful of customers began using it, unofficially, to manage volunteer shifts at community food banks. Rather than treat this as a distraction, the founders redesigned the product around that unplanned use case, and within two years the food-bank scheduling tool had become the company's primary product line.",
+    text:"Which choice best states the central idea of the passage?",
+    choices:["A company failed because it could not decide on a clear product.","An unplanned use of a product reshaped a company's core business.","Volunteer scheduling software is more profitable than inventory software in general.","Warehouse tracking tools are obsolete."],
+    correct:1,
+    explain:"The passage traces how an unexpected use case became the company's actual direction — that reshaping is the central idea." },
+  { id:'r30', section:'Reading', topic:'Central Ideas',
+    passage:"A translator working on a centuries-old folktale collection faced a persistent problem: several jokes in the original language relied on wordplay that simply didn't exist in English. Rather than footnote each joke as untranslatable, the translator invented new English wordplay that preserved the feeling of the original humor, even where the literal meaning shifted. Purists criticized the choice, but readers largely reported that the translated collection felt, for the first time, genuinely funny.",
+    text:"The passage as a whole is primarily concerned with:",
+    choices:["criticizing translators who take creative liberties.","a translator's choice to prioritize the feeling of the original text over literal accuracy, and its effect on readers.","explaining why folktales contain wordplay.","comparing two different folktale collections."],
+    correct:1,
+    explain:"The passage centers on the translator's deliberate choice and its reception — feeling over literal accuracy." },
+  { id:'r31', section:'Reading', topic:'Central Ideas',
+    passage:"Noise-canceling headphones were originally developed for airline pilots seeking relief from engine noise, a niche so small that early manufacturers assumed consumer demand would never justify mass production. Decades later, the technology's biggest market is not aviation professionals but urban commuters and remote workers seeking quiet in open-plan offices and crowded trains — a use case the original engineers never anticipated and that now drives the vast majority of industry revenue.",
+    text:"Which choice best states the main idea of the passage?",
+    choices:["Noise-canceling headphones are primarily used by airline pilots today.","A technology's largest eventual market turned out to be very different from the one it was originally designed for.","Urban commuters demand better technology than remote workers.","Aviation companies were wrong to invest in headphone technology."],
+    correct:1,
+    explain:"The passage's arc is entirely about the mismatch between the original niche market and the technology's actual dominant market today." },
+  { id:'r32', section:'Reading', topic:'Central Ideas',
+    passage:"Emmy Noether's theorem, connecting symmetry and conservation laws, underlies much of modern physics, yet for years she was denied a paid teaching position at her own university solely because of her gender, and lectured for free under a male colleague's name on the course listing. Only decades later did physicists broadly credit her with what Einstein himself called one of the most important mathematical achievements of the era.",
+    text:"Which choice best states the main purpose of the passage?",
+    choices:["To argue that a significant scientific contributor was denied recognition she deserved during her lifetime.","To explain the technical details of a physics theorem.","To compare Noether's work unfavorably to Einstein's.","To criticize modern universities' hiring practices in general."],
+    correct:0,
+    explain:"The passage's evidence — unpaid position, uncredited lectures, delayed recognition — all builds toward the argument that Noether was denied deserved recognition." },
+  { id:'r33', section:'Reading', topic:'Central Ideas',
+    passage:"When a mid-sized city proposed removing a lane of car traffic to add a protected bike lane, business owners along the corridor predicted a drop in customers reliant on street parking. A year after installation, foot and bike traffic near those same businesses had increased, and several owners who had opposed the project reported sales holding steady or rising, a pattern now echoed in similar studies in other cities.",
+    text:"The passage as a whole is primarily concerned with:",
+    choices:["describing the technical process of installing a bike lane.","showing that a predicted negative outcome did not materialize, and that the pattern has repeated elsewhere.","criticizing business owners for their initial opposition.","comparing bike lanes to car lanes in terms of construction cost."],
+    correct:1,
+    explain:"The passage's central movement is prediction (drop in customers) versus outcome (traffic and sales up), plus the note that this repeats elsewhere." },
+  { id:'r34', section:'Reading', topic:'Central Ideas',
+    passage:"Katherine Johnson's orbital trajectory calculations were essential to the success of America's early crewed spaceflights, yet for years her contributions were folded anonymously into reports credited to her all-male research group. Only when astronaut John Glenn specifically requested that she personally re-verify the computer's calculations before his flight did her individual role become widely known within the agency.",
+    text:"Which choice best states the central idea of the passage?",
+    choices:["Computers were unreliable during early spaceflight missions.","A specific individual's critical contributions went largely unrecognized for years despite being essential to a major achievement.","John Glenn distrusted the mathematics used in his mission.","All researchers in Johnson's group deserved equal individual credit."],
+    correct:1,
+    explain:"The passage's arc — essential work, anonymous credit, eventual individual recognition — centers on unrecognized individual contribution." },
+  { id:'r35', section:'Reading', topic:'Central Ideas',
+    passage:"The zebra mussel, introduced accidentally to the Great Lakes, is almost universally described as an ecological disaster, filtering out plankton that native fish depend on. Recent research complicates that picture: the same filtering has dramatically improved water clarity in several lakes, allowing sunlight to reach aquatic plants at depths previously too dark for growth, which in turn has created new habitat for certain native species that had been in decline.",
+    text:"The passage is primarily concerned with:",
+    choices:["arguing that invasive species should never be considered harmful.","complicating a mostly negative narrative about an invasive species by describing an unexpected secondary effect.","describing the life cycle of the zebra mussel in detail.","comparing the Great Lakes to other freshwater ecosystems."],
+    correct:1,
+    explain:"The passage explicitly moves from the standard negative narrative to a complicating secondary effect (improved water clarity, new habitat)." },
+  { id:'r36', section:'Reading', topic:'Central Ideas',
+    passage:"A manuscript long attributed to an anonymous medieval scribe was recently matched, through handwriting analysis, to a nun previously known only as a minor historical footnote. The attribution has prompted scholars to reexamine several other anonymous manuscripts from the same convent, several of which show similar handwriting patterns, suggesting a body of work far larger than any single named medieval woman writer previously credited.",
+    text:"Which choice best states the main idea of the passage?",
+    choices:["Medieval nuns were forbidden from writing manuscripts.","A new attribution has opened the possibility of a much larger body of work by a previously obscure historical figure.","Handwriting analysis is an unreliable method of historical attribution.","The convent produced more manuscripts than any other institution of its time."],
+    correct:1,
+    explain:"The passage's arc — one attribution leading to reexamination of several more manuscripts — centers on the expanding scope of a single figure's known work." },
+
+  // ============================================================
+  // WRITING — Sentence Boundaries (12)
+  // ============================================================
+  { id:'w1', section:'Writing', topic:'Sentence Boundaries',
+    text:"Choose the option that correctly fixes the underlined portion: \u201cThe committee reviewed the proposal, it was rejected the following week.\u201d",
+    choices:["the proposal, it was rejected","the proposal; it was rejected","the proposal it was rejected","the proposal, being rejected"],
+    correct:1,
+    explain:"Both halves are complete sentences, so a comma alone creates a comma splice. A semicolon correctly joins two independent clauses without a conjunction." },
+  { id:'w2', section:'Writing', topic:'Sentence Boundaries',
+    text:"Which version avoids a run-on while keeping the sentence's original meaning? \u201cThe data was inconclusive researchers pushed the study back a year.\u201d",
+    choices:["inconclusive, researchers pushed","inconclusive; researchers pushed","inconclusive researchers pushed","inconclusive and researchers pushed"],
+    correct:1,
+    explain:"Two complete sentences with no connector need a period or semicolon, not just a comma. A semicolon correctly separates them." },
+  { id:'w3', section:'Writing', topic:'Sentence Boundaries',
+    text:"Choose the correctly punctuated sentence:",
+    choices:["The bridge was closed for repairs, drivers had to take a lengthy detour.","The bridge was closed for repairs; drivers had to take a lengthy detour.","The bridge was closed for repairs drivers had to take a lengthy detour.","The bridge was closed for repairs, and, drivers had to take a lengthy detour."],
+    correct:1,
+    explain:"The first option is a comma splice, the third is a run-on, and the fourth has an unnecessary comma after 'and.' The semicolon correctly joins the two independent clauses." },
+  { id:'w4', section:'Writing', topic:'Sentence Boundaries',
+    text:"Which choice completes the sentence with correct punctuation? \u201cStudents who arrive late ______ will not be allowed to take the exam in the room.\u201d",
+    choices:[", without a valid excuse,","without a valid excuse",", without a valid excuse","without, a valid excuse,"],
+    correct:1,
+    explain:"'Without a valid excuse' restricts which students are meant (only those lacking an excuse), so it's essential to the sentence's meaning and should NOT be set off by commas." },
+  { id:'w5', section:'Writing', topic:'Sentence Boundaries',
+    text:"Choose the correctly punctuated version of: \u201cThe museum's new wing opened in March it features an entire floor devoted to contemporary sculpture.\u201d",
+    choices:["in March it features","in March; it features","in March, it features","in March it, features"],
+    correct:1,
+    explain:"Both clauses are complete sentences, so they need a semicolon (or period) rather than a comma or no punctuation at all." },
+  { id:'w6', section:'Writing', topic:'Sentence Boundaries',
+    text:"Choose the correctly punctuated version of: \u201cThe negotiations dragged on for months, both sides refused to compromise on the final clause.\u201d",
+    choices:["months, both sides","months both sides","months; both sides","months, and, both sides"],
+    correct:2,
+    explain:"This is a comma splice as written. A semicolon correctly joins the two independent clauses." },
+  { id:'w7', section:'Writing', topic:'Sentence Boundaries',
+    text:"Choose the correctly punctuated sentence:",
+    choices:["The report was late, the manager was furious.","The report was late; the manager was furious.","The report was late the manager was furious.","The report was late, so, the manager was furious."],
+    correct:1,
+    explain:"The first is a comma splice, the third a run-on, and the fourth has an unnecessary comma after 'so.' The semicolon correctly joins the two clauses." },
+  { id:'w8', section:'Writing', topic:'Sentence Boundaries',
+    text:"Choose the correctly punctuated version of: \u201cThe concert sold out within minutes fans had been waiting online since dawn.\u201d",
+    choices:["within minutes fans","within minutes; fans","within minutes, fans","within minutes and, fans"],
+    correct:1,
+    explain:"Both parts are independent clauses. As written it's a run-on, and a comma alone would create a splice — a semicolon is needed." },
+  { id:'w9', section:'Writing', topic:'Sentence Boundaries',
+    text:"Choose the version with correct punctuation:",
+    choices:["The report which took six months to complete, recommended significant budget cuts.","The report, which took six months to complete, recommended significant budget cuts.","The report, which took six months to complete recommended significant budget cuts.","The report which took six months to complete recommended significant budget cuts."],
+    correct:1,
+    explain:"'Which took six months to complete' is nonessential (extra) information about the report, so it must be set off by commas on both sides." },
+  { id:'w10', section:'Writing', topic:'Sentence Boundaries',
+    text:"Choose the correctly punctuated version of: \u201cThe internship paid very little, the experience proved invaluable for her career.\u201d",
+    choices:["little, the experience","little the experience","little; the experience","little, but, the experience"],
+    correct:2,
+    explain:"This is a comma splice as written. A semicolon correctly separates the two independent clauses." },
+  { id:'w11', section:'Writing', topic:'Sentence Boundaries',
+    text:"Choose the correctly punctuated sentence:",
+    choices:["Exhausted from the trip, the travelers, collapsed onto their hotel beds.","Exhausted from the trip the travelers collapsed onto their hotel beds.","Exhausted from the trip, the travelers collapsed onto their hotel beds.","Exhausted, from the trip, the travelers collapsed onto their hotel beds."],
+    correct:2,
+    explain:"An introductory phrase should be followed by one comma before the main clause. The first wrongly separates subject from verb with a comma; the second has no comma at all; the fourth awkwardly commas within the phrase." },
+  { id:'w12', section:'Writing', topic:'Sentence Boundaries',
+    text:"Choose the correctly punctuated version of: \u201cThe recipe called for fresh basil the store only had dried.\u201d",
+    choices:["fresh basil the store","fresh basil; the store","fresh basil, the store","fresh basil and the store"],
+    correct:1,
+    explain:"Both parts are independent clauses; as written it's a run-on, and a comma alone would create a splice — a semicolon is required." },
+
+  // ============================================================
+  // WRITING — Transitions (12)
+  // ============================================================
+  { id:'w13', section:'Writing', topic:'Transitions',
+    text:"The results were promising. ______, the sample size was too small to draw firm conclusions. Which transition best fits the blank?",
+    choices:["Similarly","However","For example","As a result"],
+    correct:1,
+    explain:"The second sentence contrasts with the first (promising results vs. a limitation), so a contrast transition like 'However' is required." },
+  { id:'w14', section:'Writing', topic:'Transitions',
+    text:"The city expanded its bike lanes in 2019. ______, cycling commutes rose by 40 percent the following year. Which transition best fits the blank?",
+    choices:["Nevertheless","In contrast","As a result","Meanwhile"],
+    correct:2,
+    explain:"The second sentence describes a consequence of the first, which calls for a cause-effect transition like 'As a result.'" },
+  { id:'w15', section:'Writing', topic:'Transitions',
+    text:"The bridge had been closed for inspection since January. ______, commuters were advised to expect delays throughout the spring. Which transition best fits the blank?",
+    choices:["Therefore","However","For instance","Similarly"],
+    correct:0,
+    explain:"The advisory about delays is a direct consequence of the closure, which calls for a cause-effect transition like 'Therefore.'" },
+  { id:'w16', section:'Writing', topic:'Transitions',
+    text:"The novel's first half is dense with historical detail. ______, the second half reads almost like a thriller, propelled by short chapters and cliffhangers. Which transition best fits the blank?",
+    choices:["Similarly","In contrast","As a result","For example"],
+    correct:1,
+    explain:"The two halves are described as very different in style, which calls for a contrast transition like 'In contrast.'" },
+  { id:'w17', section:'Writing', topic:'Transitions',
+    text:"Rainfall in the region has declined for a decade. ______, reservoir levels have dropped to their lowest recorded point. Which transition best fits the blank?",
+    choices:["Nevertheless","Consequently","For instance","In other words"],
+    correct:1,
+    explain:"The drop in reservoir levels is a consequence of declining rainfall, which calls for 'Consequently.'" },
+  { id:'w18', section:'Writing', topic:'Transitions',
+    text:"The committee reviewed dozens of proposals. ______, only three met the minimum funding criteria. Which transition best fits the blank?",
+    choices:["However","Similarly","For example","Meanwhile"],
+    correct:0,
+    explain:"The contrast between the large number reviewed and the small number that qualified calls for 'However.'" },
+  { id:'w19', section:'Writing', topic:'Transitions',
+    text:"The company's earnings fell for the third consecutive quarter. ______, the board voted to replace the chief financial officer. Which transition best fits the blank?",
+    choices:["Similarly","In response","For example","Nonetheless"],
+    correct:1,
+    explain:"The board's action was a direct reaction to the falling earnings, which calls for 'In response.'" },
+  { id:'w20', section:'Writing', topic:'Transitions',
+    text:"The trail was steep and rocky for the first two miles. ______, the final mile wound gently through open meadow. Which transition best fits the blank?",
+    choices:["Likewise","By contrast","Consequently","In addition"],
+    correct:1,
+    explain:"The trail's character changes dramatically between the two sections, which calls for a contrast transition like 'By contrast.'" },
+  { id:'w21', section:'Writing', topic:'Transitions',
+    text:"The city council debated the proposal for over four hours. ______, they adjourned without reaching a decision. Which transition best fits the blank?",
+    choices:["Ultimately","For instance","Similarly","In other words"],
+    correct:0,
+    explain:"'Ultimately' correctly signals the final outcome after a long process, matching the sequence described." },
+  { id:'w22', section:'Writing', topic:'Transitions',
+    text:"Many species of frog are highly sensitive to changes in water pH. ______, biologists often use frog populations as an early indicator of water pollution. Which transition best fits the blank?",
+    choices:["However","As a result","In contrast","Meanwhile"],
+    correct:1,
+    explain:"Using frogs as an indicator is a direct consequence of their sensitivity, which calls for 'As a result.'" },
+  { id:'w23', section:'Writing', topic:'Transitions',
+    text:"The museum's new exhibit received glowing reviews from critics. ______, ticket sales in its opening month were lower than the museum had projected. Which transition best fits the blank?",
+    choices:["Similarly","However","Therefore","For example"],
+    correct:1,
+    explain:"The contrast between glowing reviews and disappointing sales calls for 'However.'" },
+  { id:'w24', section:'Writing', topic:'Transitions',
+    text:"The factory switched entirely to renewable energy sources in 2019. ______, its carbon emissions dropped by nearly sixty percent within two years. Which transition best fits the blank?",
+    choices:["Nevertheless","Subsequently","In contrast","For instance"],
+    correct:1,
+    explain:"'Subsequently' correctly signals the time-ordered cause-and-effect relationship between the switch and the emissions drop." },
+
+  // ============================================================
+  // WRITING — Standard English Conventions (12)
+  // ============================================================
+  { id:'w25', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the correct verb form: \u201cEach of the students ______ required to submit a portfolio.\u201d",
+    choices:["are","is","were","have been"],
+    correct:1,
+    explain:"'Each' is singular, so the verb must agree in the singular: 'is,' even though 'students' (plural) sits nearby — a classic subject-verb agreement trap." },
+  { id:'w26', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the option with correct pronoun agreement: \u201cIf a student wants to improve, ______ should review mistakes regularly.\u201d",
+    choices:["they","he","she","it"],
+    correct:0,
+    explain:"'They' is the standard, widely accepted singular pronoun for an unspecified individual ('a student') in modern usage." },
+  { id:'w27', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the correct verb: \u201cThe list of items ______ on the table.\u201d",
+    choices:["is","are","were","have been"],
+    correct:0,
+    explain:"The subject is 'list' (singular), not 'items,' so the verb must agree in the singular: 'is.'" },
+  { id:'w28', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the correct verb: \u201cNeither the coach nor the players ______ satisfied with the referee's call.\u201d",
+    choices:["was","is","were","has been"],
+    correct:2,
+    explain:"With 'neither...nor,' the verb agrees with the nearer subject — here, the plural 'players' — so 'were' is correct." },
+  { id:'w29', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the correctly formed sentence:",
+    choices:["The manual explains how to install the software, updating drivers, and troubleshoot common errors.","The manual explains how to install the software, update drivers, and troubleshoot common errors.","The manual explains how to install the software, updating drivers, and troubleshooting common errors.","The manual explains how installing the software, update drivers, and troubleshoot common errors."],
+    correct:1,
+    explain:"Parallel structure requires all three items after 'how to' to use the same verb form. Only the second choice keeps all three as plain infinitives (install, update, troubleshoot)." },
+  { id:'w30', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the sentence with the correct possessive/contraction form:",
+    choices:["The company reported it's earnings for the quarter.","The company reported its earnings for the quarter.","The company reported its' earnings for the quarter.","The company reported their earnings for the quarter, which is it's biggest quarter yet."],
+    correct:1,
+    explain:"'Its' (no apostrophe) is the possessive form; 'it's' is a contraction of 'it is,' which doesn't fit here." },
+  { id:'w31', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the correct verb: \u201cThe number of applicants ______ increased significantly this year.\u201d",
+    choices:["has","have","were","are"],
+    correct:0,
+    explain:"'The number of X' is treated as singular, so the verb must be singular: 'has.'" },
+  { id:'w32', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the correct pronoun: \u201cEvery one of the puppies needs ______ own bed.\u201d",
+    choices:["their","its","his","our"],
+    correct:1,
+    explain:"'Every one' is singular, so the pronoun must be singular: 'its.'" },
+  { id:'w33', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the correctly formed sentence:",
+    choices:["The award went to whomever submitted the best proposal.","The award went to whoever submitted the best proposal.","The award went to who submitted the best proposal.","The award went to whom submitted the best proposal."],
+    correct:1,
+    explain:"'Whoever' is the subject of 'submitted' within its own clause, so the subjective case is required, regardless of the clause's role in the larger sentence." },
+  { id:'w34', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the correct verb form: \u201cBy the time the guests arrive, the caterers ______ already set up the tables.\u201d",
+    choices:["will have","have","had","will"],
+    correct:0,
+    explain:"This describes an action that will be completed before a future event, which requires the future perfect: 'will have.'" },
+  { id:'w35', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the correct comparison: \u201cOf the two finalists, the second speaker was clearly the ______ prepared.\u201d",
+    choices:["more","most","much more","best"],
+    correct:0,
+    explain:"When comparing exactly two items, the comparative form ('more') is correct, not the superlative ('most'), which is reserved for three or more." },
+  { id:'w36', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the sentence with correct subject-verb agreement:",
+    choices:["The committee, along with several advisors, are meeting tomorrow.","The committee, along with several advisors, is meeting tomorrow.","The committee, along with several advisors, were meeting tomorrow.","The committee, along with several advisors, have been meeting tomorrow."],
+    correct:1,
+    explain:"'Along with several advisors' is a parenthetical phrase that doesn't change the subject's number — 'committee' (singular) still takes 'is.'" },
+  // ============================================================
+  // MATH — Linear Systems (12 more)
+  // ============================================================
+  { id:'m37', section:'Math', topic:'Linear Systems',
+    text:"A taxi charges $3 flat fee plus $2.50 per mile. Another taxi charges $6 flat fee plus $2 per mile. After how many miles do both taxis cost the same?",
+    choices:["4","5","6","7"], correct:2,
+    explain:"3 + 2.5m = 6 + 2m → 0.5m = 3 → m = 6." },
+  { id:'m38', section:'Math', topic:'Linear Systems',
+    text:"If 2x + 3y = 12 and x = y + 1, what is the value of y?",
+    choices:["1","2","3","4"], correct:1,
+    explain:"Substitute: 2(y+1) + 3y = 12 → 5y + 2 = 12 → y = 2." },
+  { id:'m39', section:'Math', topic:'Linear Systems',
+    text:"A line passes through (-1, 4) and (3, -8). What is its slope?",
+    choices:["-3","-2","2","3"], correct:0,
+    explain:"Slope = (-8 - 4)/(3 - (-1)) = -12/4 = -3." },
+  { id:'m40', section:'Math', topic:'Linear Systems',
+    text:"Three times a number increased by 5 equals twice the number increased by 11. What is the number?",
+    choices:["3","4","5","6"], correct:3,
+    explain:"3x + 5 = 2x + 11 → x = 6." },
+  { id:'m41', section:'Math', topic:'Linear Systems',
+    text:"The sum of two numbers is 40. Their difference is 12. What is the smaller number?",
+    choices:["10","12","14","16"], correct:2,
+    explain:"x + y = 40 and x - y = 12. Adding: 2x = 52 → x = 26, so y = 14." },
+  { id:'m42', section:'Math', topic:'Linear Systems',
+    text:"A theater charges $12 per ticket plus a $3 booking fee. A rival charges $10 per ticket plus a $9 booking fee. For how many tickets in one order do both cost the same?",
+    choices:["2","3","4","5"], correct:1,
+    explain:"12t + 3 = 10t + 9 → 2t = 6 → t = 3." },
+  { id:'m43', section:'Math', topic:'Linear Systems',
+    text:"If 5x - 2y = 11 and y = 2x - 5, what is the value of x?",
+    choices:["1","2","3","4"], correct:0,
+    explain:"5x - 2(2x - 5) = 11 → 5x - 4x + 10 = 11 → x = 1." },
+  { id:'m44', section:'Math', topic:'Linear Systems',
+    text:"A line has a slope of 4 and passes through (0, -3). What is the value of y when x = 2?",
+    choices:["3","5","7","9"], correct:1,
+    explain:"y = 4x - 3. At x = 2: y = 8 - 3 = 5." },
+  { id:'m45', section:'Math', topic:'Linear Systems',
+    text:"The perimeter of a triangle is 36. Two sides are equal in length, and the third side is 6 more than one of the equal sides. What is the length of one equal side?",
+    choices:["8","9","10","11"], correct:2,
+    explain:"2s + (s + 6) = 36 → 3s = 30 → s = 10." },
+  { id:'m46', section:'Math', topic:'Linear Systems',
+    text:"Solve for x: 4(x + 3) - 2x = 22",
+    choices:["3","4","5","6"], correct:2,
+    explain:"4x + 12 - 2x = 22 → 2x = 10 → x = 5." },
+  { id:'m47', section:'Math', topic:'Linear Systems',
+    text:"Two numbers differ by 15. Their sum is 55. What is the larger number?",
+    choices:["30","32","35","40"], correct:2,
+    explain:"x - y = 15 and x + y = 55. Adding: 2x = 70 → x = 35." },
+  { id:'m48', section:'Math', topic:'Linear Systems',
+    text:"A rental car costs $35 per day plus $0.20 per mile. If a one-day rental cost $83, how many miles were driven?",
+    choices:["180","200","220","240"], correct:3,
+    explain:"35 + 0.20m = 83 → 0.20m = 48 → m = 240." },
+
+  // ============================================================
+  // MATH — Advanced Algebra (12 more)
+  // ============================================================
+  { id:'m49', section:'Math', topic:'Advanced Algebra',
+    text:"If f(x) = 3x\u00b2 - x - 2, what is f(2)?",
+    choices:["6","8","10","12"], correct:1,
+    explain:"f(2) = 3(4) - 2 - 2 = 12 - 4 = 8." },
+  { id:'m50', section:'Math', topic:'Advanced Algebra',
+    text:"What is the sum of the solutions to x\u00b2 - 6x + 8 = 0?",
+    choices:["4","6","8","10"], correct:1,
+    explain:"Factor: (x-2)(x-4) = 0, so x = 2 or x = 4. Sum = 6." },
+  { id:'m51', section:'Math', topic:'Advanced Algebra',
+    text:"If g(x) = x\u00b2 - 9, what is the sum of the roots of g(x) = 0?",
+    choices:["-3","0","3","9"], correct:1,
+    explain:"x\u00b2 = 9 → x = 3 or x = -3. Sum = 0." },
+  { id:'m52', section:'Math', topic:'Advanced Algebra',
+    text:"If h(x) = 3x + 2, what is h(h(1))?",
+    choices:["11","14","17","20"], correct:2,
+    explain:"h(1) = 5. Then h(5) = 3(5) + 2 = 17." },
+  { id:'m53', section:'Math', topic:'Advanced Algebra',
+    text:"What is the value of x that satisfies 3^(x-1) = 81?",
+    choices:["3","4","5","6"], correct:2,
+    explain:"81 = 3^4, so x - 1 = 4 → x = 5." },
+  { id:'m54', section:'Math', topic:'Advanced Algebra',
+    text:"If (x + 2)\u00b2 = 25, which of the following is a possible value of x?",
+    choices:["-7","-3","2","7"], correct:0,
+    explain:"x + 2 = \u00b15, so x = 3 or x = -7. Of the choices given, -7 works." },
+  { id:'m55', section:'Math', topic:'Advanced Algebra',
+    text:"If f(x) = x\u00b2 + 3x - 10, what is the positive value of x for which f(x) = 0?",
+    choices:["1","2","3","4"], correct:1,
+    explain:"Factor: (x+5)(x-2) = 0, so x = 2 or x = -5. The positive solution is 2." },
+  { id:'m56', section:'Math', topic:'Advanced Algebra',
+    text:"If 4(x + 1) = 3(x - 2), what is the value of x?",
+    choices:["-10","-6","6","10"], correct:0,
+    explain:"4x + 4 = 3x - 6 → x = -10." },
+  { id:'m57', section:'Math', topic:'Advanced Algebra',
+    text:"The expression (x - 5)(x + 5) is equivalent to:",
+    choices:["x\u00b2 - 25","x\u00b2 + 25","x\u00b2 - 10x - 25","x\u00b2 + 10x - 25"], correct:0,
+    explain:"This is a difference of squares: (x-5)(x+5) = x\u00b2 - 25." },
+  { id:'m58', section:'Math', topic:'Advanced Algebra',
+    text:"If x\u00b2 = 81 and x < 0, what is the value of x?",
+    choices:["-9","-81","9","81"], correct:0,
+    explain:"x = \u00b19, and since x < 0, x = -9." },
+  { id:'m59', section:'Math', topic:'Advanced Algebra',
+    text:"What is the positive value of k for which x\u00b2 + kx + 16 = 0 has exactly one solution?",
+    choices:["4","8","12","16"], correct:1,
+    explain:"Exactly one solution means the discriminant is 0: k\u00b2 - 4(1)(16) = 0 → k\u00b2 = 64 → k = 8." },
+  { id:'m60', section:'Math', topic:'Advanced Algebra',
+    text:"If f(x) = (2x + 6)/(x - 1), what is f(3)?",
+    choices:["4","5","6","7"], correct:2,
+    explain:"f(3) = (6+6)/(3-1) = 12/2 = 6." },
+
+  // ============================================================
+  // MATH — Data Analysis (12 more)
+  // ============================================================
+  { id:'m61', section:'Math', topic:'Data Analysis',
+    text:"A data set has a mean of 15 and 4 values. If three of the values are 8, 12, and 16, what is the fourth value?",
+    choices:["20","22","24","26"], correct:2,
+    explain:"Sum of all 4 values = 15 x 4 = 60. Known three sum to 36, so the fourth value is 60 - 36 = 24." },
+  { id:'m62', section:'Math', topic:'Data Analysis',
+    text:"In a survey, 35% of 400 respondents chose Option A. How many respondents is that?",
+    choices:["120","130","140","150"], correct:2,
+    explain:"0.35 x 400 = 140." },
+  { id:'m63', section:'Math', topic:'Data Analysis',
+    text:"A bag contains 6 yellow, 9 purple, and 5 orange balls. If one ball is selected at random, what is the probability it is NOT purple?",
+    choices:["9/20","1/2","11/20","3/5"], correct:2,
+    explain:"Total = 20 balls, purple = 9. Not purple = 11/20." },
+  { id:'m64', section:'Math', topic:'Data Analysis',
+    text:"What is the median of the data set {22, 14, 9, 31, 17, 25}?",
+    choices:["17","19.5","22","23.5"], correct:1,
+    explain:"Sorted: 9, 14, 17, 22, 25, 31. Median = (17 + 22)/2 = 19.5." },
+  { id:'m65', section:'Math', topic:'Data Analysis',
+    text:"A company's expenses rose from $60,000 to $75,000. What is the percent increase?",
+    choices:["15%","20%","25%","30%"], correct:2,
+    explain:"Increase = 15,000. Percent increase = 15,000/60,000 = 25%." },
+  { id:'m66', section:'Math', topic:'Data Analysis',
+    text:"A line of best fit is y = -3x + 50. According to this model, what is the predicted value of y when x = 8?",
+    choices:["22","24","26","28"], correct:2,
+    explain:"y = -3(8) + 50 = -24 + 50 = 26." },
+  { id:'m67', section:'Math', topic:'Data Analysis',
+    text:"A survey of 320 people found that 25% prefer product X over product Y, and everyone surveyed prefers one or the other. How many people prefer product Y?",
+    choices:["80","200","240","260"], correct:2,
+    explain:"25% prefer X: 0.25 x 320 = 80. The rest, 320 - 80 = 240, prefer Y." },
+  { id:'m68', section:'Math', topic:'Data Analysis',
+    text:"What is the mode of the data set {3, 8, 8, 5, 8, 11, 5}?",
+    choices:["3","5","8","11"], correct:2,
+    explain:"8 appears three times, more than any other value, so the mode is 8." },
+  { id:'m69', section:'Math', topic:'Data Analysis',
+    text:"A charity's donations grew from $25,000 to $31,000. What is the percent increase, rounded to the nearest percent?",
+    choices:["18%","20%","24%","28%"], correct:2,
+    explain:"Increase = 6,000. Percent increase = 6,000/25,000 = 24%." },
+  { id:'m70', section:'Math', topic:'Data Analysis',
+    text:"In a data set of 12 values, the range is 40 and the maximum value is 55. What is the minimum value?",
+    choices:["10","15","20","25"], correct:1,
+    explain:"Range = maximum - minimum, so minimum = 55 - 40 = 15." },
+  { id:'m71', section:'Math', topic:'Data Analysis',
+    text:"A random sample of 600 students found that 42% ride the bus to school. Based on this sample, approximately how many of a student population of 3,000 would be expected to ride the bus?",
+    choices:["1,200","1,260","1,300","1,400"], correct:1,
+    explain:"0.42 x 3,000 = 1,260." },
+  { id:'m72', section:'Math', topic:'Data Analysis',
+    text:"A linear model predicts y = 0.8x + 12. According to this model, what is the change in y for every increase of 5 in x?",
+    choices:["2","4","6","8"], correct:1,
+    explain:"The slope is 0.8, so a 5-unit increase in x changes y by 0.8 x 5 = 4." },
+
+  // ============================================================
+  // READING — Command of Evidence (12 more)
+  // ============================================================
+  { id:'r37', section:'Reading', topic:'Command of Evidence',
+    passage:"A rural school district switched to a four-day week, citing budget savings as the primary motivation. Two years later, the anticipated savings had largely failed to materialize, since the district still paid for the same annual instructional hours, just compressed into fewer, longer days. What administrators had not expected was a drop in teacher turnover, which fell by nearly half compared to neighboring districts still on a five-day schedule.",
+    text:"Which choice best supports the claim that the four-day week's most significant effect was not financial?",
+    choices:["A rural school district switched to a four-day week, citing budget savings as the primary motivation.","The anticipated savings had largely failed to materialize.","Teacher turnover fell by nearly half compared to neighboring districts still on a five-day schedule.","The district still paid for the same annual instructional hours, just compressed into fewer days."],
+    correct:2,
+    explain:"The claim is about the most significant effect being non-financial. Only this choice names a major, unexpected non-financial effect (teacher retention)." },
+  { id:'r38', section:'Reading', topic:'Command of Evidence',
+    passage:"Shoe manufacturers have long marketed thicker cushioning as a way to reduce runner injuries, and sales of maximalist shoes have grown accordingly. A biomechanics lab tracking injury rates across 300 recreational runners over two years found no statistically significant difference in injury rates between those in thickly cushioned shoes and those in minimalist shoes; the strongest predictor of injury, instead, was how quickly a runner increased their weekly mileage.",
+    text:"Which choice best supports the claim that shoe cushioning was not the decisive factor in injury rates?",
+    choices:["Shoe manufacturers have long marketed thicker cushioning as a way to reduce injuries.","Sales of maximalist shoes have grown accordingly.","There was no statistically significant difference in injury rates between cushioning types.","The lab tracked 300 recreational runners over two years."],
+    correct:2,
+    explain:"Only this choice states the direct finding that cushioning type made no measurable difference." },
+  { id:'r39', section:'Reading', topic:'Command of Evidence',
+    passage:"When a city replaced its old orange sodium streetlights with brighter white LEDs, officials expected a straightforward reduction in nighttime crime due to improved visibility. Crime data over the following eighteen months showed no clear citywide drop; instead, the effect varied sharply by neighborhood, decreasing in areas where community groups also ran coordinated safety patrols and remaining flat everywhere else.",
+    text:"Which choice best supports the claim that improved lighting alone did not reliably reduce crime?",
+    choices:["Officials expected a straightforward reduction in nighttime crime.","Crime data over the following eighteen months showed no clear citywide drop.","The effect varied sharply by neighborhood, decreasing only where community safety patrols also operated.","The city replaced its old streetlights with brighter LEDs."],
+    correct:2,
+    explain:"This choice shows lighting's effect depended on an additional factor (patrols), meaning lighting alone was not sufficient." },
+  { id:'r40', section:'Reading', topic:'Command of Evidence',
+    passage:"Educators have debated whether typing or handwriting notes leads to better retention. A study comparing college students found that typists took notes nearly three times faster and captured more total content, yet performed worse on conceptual questions a week later than students who handwrote their notes, likely because handwriting's slower pace forced students to summarize and process ideas rather than transcribe them verbatim.",
+    text:"Which choice best supports the claim that faster note-taking did not lead to better learning outcomes in this study?",
+    choices:["Educators have debated whether typing or handwriting leads to better retention.","Typists took notes nearly three times faster and captured more total content.","Typists performed worse on conceptual questions a week later than students who handwrote notes.","Handwriting's slower pace forced students to summarize and process ideas."],
+    correct:2,
+    explain:"Only this choice directly compares the outcome (test performance) between the faster and slower methods." },
+  { id:'r41', section:'Reading', topic:'Command of Evidence',
+    passage:"A cafe chain removed free WiFi from several locations, expecting a drop in daily customer visits as remote workers relocated elsewhere. Foot traffic data over the following quarter showed visits actually increased at the WiFi-free locations, and average time spent per visit dropped by nearly half, suggesting tables freed up faster and served more distinct customers throughout the day.",
+    text:"Which choice best supports the claim that removing WiFi did not reduce overall customer visits?",
+    choices:["A cafe chain removed free WiFi from several locations.","Officials expected a drop in daily customer visits.","Foot traffic data over the following quarter showed visits actually increased.","Average time spent per visit dropped by nearly half."],
+    correct:2,
+    explain:"Only this choice directly states the actual outcome for visit counts, contradicting the expectation of a drop." },
+  { id:'r42', section:'Reading', topic:'Command of Evidence',
+    passage:"Forest managers have long debated whether mechanically thinning dense stands of trees reduces wildfire severity or simply delays the problem. A decade-long comparison of thinned and untreated forest plots found that when fires did reach thinned areas, they burned at roughly half the intensity and were significantly easier for crews to contain, even though thinning did not reduce how often fires started in the first place.",
+    text:"Which choice best supports the claim that thinning affected fire severity rather than fire frequency?",
+    choices:["Forest managers have long debated whether thinning reduces wildfire severity.","Fires that reached thinned areas burned at roughly half the intensity and were easier to contain.","Thinning did not reduce how often fires started in the first place.","A decade-long comparison of thinned and untreated plots was conducted."],
+    correct:1,
+    explain:"This choice specifically addresses severity (intensity, containment difficulty), which is what the claim is about." },
+  { id:'r43', section:'Reading', topic:'Command of Evidence',
+    passage:"Companies adopted open-plan offices partly to encourage spontaneous collaboration between employees. Contrary to that goal, a study using employee sensor badges found that face-to-face interaction actually decreased by about 70% after companies switched from private offices to open layouts, while electronic messaging between the same employees increased by a similar margin.",
+    text:"Which choice best supports the claim that open-plan offices did not increase face-to-face collaboration as intended?",
+    choices:["Companies adopted open-plan offices partly to encourage spontaneous collaboration.","Face-to-face interaction actually decreased by about 70% after the switch.","Electronic messaging between the same employees increased by a similar margin.","Workers sought privacy through headphones and digital communication."],
+    correct:1,
+    explain:"This choice directly states the measured drop in face-to-face interaction, the opposite of the intended goal." },
+  { id:'r44', section:'Reading', topic:'Command of Evidence',
+    passage:"A struggling regional museum, hoping to boost revenue, doubled its admission price. Visitor numbers dropped sharply, as expected, but total annual revenue also fell, since the drop in visitors outpaced the higher per-ticket price. The museum's revenue only recovered the following year, after it reversed the price increase and introduced a modestly priced membership program.",
+    text:"Which choice best supports the claim that the price increase failed to achieve its financial goal?",
+    choices:["A struggling museum, hoping to boost revenue, doubled its admission price.","Visitor numbers dropped sharply, as expected.","Total annual revenue also fell, since the drop in visitors outpaced the higher per-ticket price.","The museum introduced a membership program the following year."],
+    correct:2,
+    explain:"This choice directly states the financial outcome (revenue fell), which is what the claim is about." },
+  { id:'r45', section:'Reading', topic:'Command of Evidence',
+    passage:"A call center required agents to follow a rigid word-for-word script, believing consistency would improve customer satisfaction scores. After switching to a looser set of guidelines that let agents use their own phrasing while covering the same required points, customer satisfaction scores rose by 15 percent, and average call length dropped.",
+    text:"Which choice best supports the claim that strict scripting was not necessary for good customer service?",
+    choices:["A call center required agents to follow a rigid word-for-word script.","The center believed consistency would improve satisfaction scores.","After switching to looser guidelines, satisfaction scores rose by 15 percent.","Average call length dropped."],
+    correct:2,
+    explain:"This choice shows the outcome improved once strict scripting was removed, supporting the claim it wasn't necessary." },
+  { id:'r46', section:'Reading', topic:'Command of Evidence',
+    passage:"Conventional wisdom in winemaking holds that vines need consistent irrigation to produce a reliable harvest. When a vineyard, facing a regional water shortage, cut irrigation by 40% during the growing season, yield did drop slightly, but the grapes that were harvested showed notably higher sugar concentration, producing a wine critics rated among the vineyard's best in a decade.",
+    text:"Which choice best supports the claim that reduced irrigation improved wine quality even as yield dropped?",
+    choices:["Conventional wisdom holds that vines need consistent irrigation.","A vineyard cut irrigation by 40% due to a water shortage.","Yield dropped slightly.","The grapes showed higher sugar concentration, producing a wine critics rated among the vineyard's best."],
+    correct:3,
+    explain:"This choice directly connects reduced irrigation to a quality improvement, which is what the claim requires." },
+  { id:'r47', section:'Reading', topic:'Command of Evidence',
+    passage:"Advocates of remote work often cite reduced commuting as an environmental benefit. A study tracking home energy use among newly remote employees found that household heating and cooling costs rose enough, on average, to offset roughly a third of the emissions saved by not commuting, a finding the study's authors say complicates simple claims about remote work's net environmental impact.",
+    text:"Which choice best supports the claim that remote work's environmental benefit is more complicated than commonly assumed?",
+    choices:["Advocates often cite reduced commuting as an environmental benefit.","A study tracked home energy use among newly remote employees.","Household heating and cooling costs rose enough to offset roughly a third of the emissions saved.","The study's authors say the finding complicates simple claims."],
+    correct:2,
+    explain:"This choice gives the specific data point (offsetting a third of savings) that complicates the simple narrative." },
+  { id:'r48', section:'Reading', topic:'Command of Evidence',
+    passage:"A hospital switched nurses from 12-hour shifts to 8-hour shifts, expecting fewer medical errors due to reduced fatigue. Error rates did fall in the following year, but hospital administrators noted that nurse turnover also dropped sharply during the same period, complicating any simple conclusion, since fewer errors might partly reflect a more experienced, stable staff rather than shift length alone.",
+    text:"Which choice best supports the claim that the drop in errors may not be fully explained by shorter shifts alone?",
+    choices:["A hospital switched nurses from 12-hour shifts to 8-hour shifts.","The hospital expected fewer errors due to reduced fatigue.","Error rates did fall in the following year.","Nurse turnover also dropped sharply, potentially reflecting a more experienced, stable staff."],
+    correct:3,
+    explain:"This choice introduces the confounding factor (lower turnover, more experience) that complicates attributing the improvement to shift length alone." },
+
+  // ============================================================
+  // READING — Craft and Structure (12 more)
+  // ============================================================
+  { id:'r49', section:'Reading', topic:'Craft and Structure',
+    passage:"The CEO's response to the leaked memo was uncharacteristically terse, a single sentence where reporters had expected a lengthy statement.",
+    text:"As used in the passage, \u201cterse\u201d most nearly means:",
+    choices:["brief and curt","warm and friendly","confusing","delayed"],
+    correct:0,
+    explain:"A single sentence in place of an expected lengthy statement describes something brief and curt." },
+  { id:'r50', section:'Reading', topic:'Craft and Structure',
+    passage:"The documentary opens mid-action, with firefighters already battling a blaze, before rewinding to explain, scene by scene, the sequence of decisions that led to that moment.",
+    text:"The overall structure of the documentary's opening can best be described as:",
+    choices:["strictly chronological from beginning to end","starting in the middle of the action, then explaining how events led there","two unrelated stories told side by side","a debate between opposing experts"],
+    correct:1,
+    explain:"The passage explicitly describes starting mid-action and then rewinding to explain the lead-up." },
+  { id:'r51', section:'Reading', topic:'Craft and Structure',
+    passage:"Rather than confront the criticism directly, the spokesperson gave an evasive answer that left reporters with more questions than before.",
+    text:"As used in the passage, \u201cevasive\u201d most nearly means:",
+    choices:["extremely detailed","avoiding a direct answer","angry and defensive","enthusiastic"],
+    correct:1,
+    explain:"An answer that leaves reporters with more questions, given instead of confronting the issue directly, is one that avoids a direct answer." },
+  { id:'r52', section:'Reading', topic:'Craft and Structure',
+    passage:"Most biographies of the inventor focus on his famous patents. The following sentence, however, appears in an essay that instead spends most of its length on his repeated business failures: \u2018For every device that made him famous, three others bankrupted a company before he found one that worked.\u2019",
+    text:"The primary function of the quoted sentence within the essay is to:",
+    choices:["criticize the inventor's business skills entirely","acknowledge his famous successes while introducing the essay's actual focus on his failures","summarize the essay's conclusion","provide technical details about a specific patent"],
+    correct:1,
+    explain:"The sentence names his fame (successes) before pivoting toward the essay's real focus, his failures." },
+  { id:'r53', section:'Reading', topic:'Craft and Structure',
+    passage:"The novelist's prose is famously spare, favoring short, unadorned sentences over the dense, elaborate style of her contemporaries.",
+    text:"As used in the passage, \u201cspare\u201d most nearly means:",
+    choices:["abundant and decorative","minimal and simple","emotional","historical"],
+    correct:1,
+    explain:"Short, unadorned sentences contrasted with dense, elaborate style describes a minimal, simple approach." },
+  { id:'r54', section:'Reading', topic:'Craft and Structure',
+    passage:"The article alternates, paragraph by paragraph, between a scientist's personal account of a failed experiment and a technical explanation of what her data eventually revealed.",
+    text:"The overall structure of the article can best be described as:",
+    choices:["a single continuous technical report","alternating between a personal narrative and technical explanation","a chronological list of unrelated experiments","two competing arguments with no connection"],
+    correct:1,
+    explain:"The passage explicitly states the article alternates between personal narrative and technical explanation." },
+  { id:'r55', section:'Reading', topic:'Craft and Structure',
+    passage:"Critics called the film's plot derivative, noting that its central twist had appeared, nearly unchanged, in at least three earlier movies.",
+    text:"As used in the passage, \u201cderivative\u201d most nearly means:",
+    choices:["highly original","imitative of existing work","expensive to produce","poorly filmed"],
+    correct:1,
+    explain:"A plot twist that appeared nearly unchanged in earlier movies is being described as imitative, not original." },
+  { id:'r56', section:'Reading', topic:'Craft and Structure',
+    passage:"The report's data section is dense with tables and percentages. Near its end, however, a single sentence departs from that style: \u2018Behind each percentage point is a family that either kept their home or lost it.\u2019",
+    text:"The primary function of the quoted sentence is to:",
+    choices:["undermine the reliability of the statistics","reframe abstract data in terms of real human stakes","introduce a new statistical method","summarize the report's methodology"],
+    correct:1,
+    explain:"The sentence translates a percentage point into a human consequence, reframing the data rather than undermining or summarizing it." },
+  { id:'r57', section:'Reading', topic:'Craft and Structure',
+    passage:"The negotiator's calm, measured tone throughout the tense meeting helped defuse what could have become a hostile confrontation.",
+    text:"As used in the passage, \u201cdefuse\u201d most nearly means:",
+    choices:["to make more dangerous","to calm or reduce tension in a situation","to explode suddenly","to ignore completely"],
+    correct:1,
+    explain:"A calm tone that prevents a hostile confrontation is described as defusing, meaning to calm or reduce tension." },
+  { id:'r58', section:'Reading', topic:'Craft and Structure',
+    passage:"The essay begins with two paragraphs praising the policy's intended goals before spending its remaining length detailing the ways implementation fell short of those goals.",
+    text:"The overall structure of the essay moves from:",
+    choices:["criticism to praise","praise for intentions to critique of implementation","one historical period to another","a single anecdote with no broader point"],
+    correct:1,
+    explain:"The passage explicitly describes moving from praise (intended goals) to critique (implementation shortfalls)." },
+  { id:'r59', section:'Reading', topic:'Craft and Structure',
+    passage:"The committee's decision was unanimous, a rare instance of consensus after months of contentious debate on nearly every other issue.",
+    text:"As used in the passage, \u201cconsensus\u201d most nearly means:",
+    choices:["general agreement","strong disagreement","a formal vote","confusion"],
+    correct:0,
+    explain:"A unanimous decision, contrasted with months of contentious debate, is described as a rare instance of general agreement." },
+  { id:'r60', section:'Reading', topic:'Craft and Structure',
+    passage:"The travel article otherwise reads as a straightforward list of recommended restaurants. One sentence breaks from that format: \u2018None of this matters if you can't get a reservation, and in this city, you almost never can.\u2019",
+    text:"The primary function of the quoted sentence is to:",
+    choices:["contradict the rest of the article's recommendations entirely","introduce a practical caveat that complicates the article's otherwise straightforward recommendations","summarize the article's main argument","provide a transition to a new topic unrelated to restaurants"],
+    correct:1,
+    explain:"The sentence adds a practical limitation to the recommendations without contradicting or abandoning them." },
+
+  // ============================================================
+  // READING — Central Ideas (12 more)
+  // ============================================================
+  { id:'r61', section:'Reading', topic:'Central Ideas',
+    passage:"Wikipedia was dismissed by many academics in its early years as an unreliable source unfit for serious research. Studies comparing its accuracy to traditional encyclopedias, however, have repeatedly found error rates in the same range as professionally edited references, and its continuous editing process now corrects errors far faster than any print reference ever could.",
+    text:"Which choice best states the main idea of the passage?",
+    choices:["Wikipedia is completely free of errors.","A source once dismissed as unreliable has been shown to perform comparably to traditional references and correct errors faster.","Traditional encyclopedias are now obsolete.","Academics no longer use any online sources."],
+    correct:1,
+    explain:"The passage's arc moves from initial dismissal to evidence of comparable accuracy and faster correction — that's the main idea." },
+  { id:'r62', section:'Reading', topic:'Central Ideas',
+    passage:"The Antikythera mechanism, recovered from a shipwreck in 1901, was initially catalogued as a corroded lump of bronze and largely ignored for decades. Only when later researchers used X-ray imaging to peer inside did they discover an intricate system of gears capable of tracking astronomical cycles, a level of mechanical complexity not seen again in Europe for over a thousand years.",
+    text:"The passage as a whole is primarily concerned with:",
+    choices:["describing a shipwreck in vivid detail","explaining how a long-overlooked object was revealed to be a remarkably advanced device","criticizing early researchers for their mistakes","comparing Greek and Roman engineering broadly"],
+    correct:1,
+    explain:"The passage's central movement is from an ignored, uncatalogued object to a revealed, remarkably advanced device." },
+  { id:'r63', section:'Reading', topic:'Central Ideas',
+    passage:"A city's public transit agency assumed that adding more bus routes would be the most effective way to increase ridership. When ridership barely moved after a major route expansion, planners instead tried increasing the frequency of existing routes, and ridership rose by nearly a quarter within a year, suggesting reliability mattered more to riders than route coverage.",
+    text:"Which choice best states the central idea of the passage?",
+    choices:["Adding more bus routes always increases ridership.","An assumption about what would increase ridership proved less effective than an alternative the agency hadn't prioritized.","Public transit agencies should eliminate underused routes.","Riders prefer routes over frequency in every case."],
+    correct:1,
+    explain:"The passage's arc is: original assumption fails, alternative approach succeeds — that contrast is the central idea." },
+  { id:'r64', section:'Reading', topic:'Central Ideas',
+    passage:"Octopuses are famously intelligent for invertebrates, solving puzzles and using tools in ways once thought unique to vertebrates. What makes this especially puzzling to biologists is that octopuses are largely solitary and short-lived, typically dying within a year or two of reaching maturity — traits usually associated with simpler, not more complex, cognition in other species.",
+    text:"The passage is primarily concerned with:",
+    choices:["explaining why octopuses are dangerous to humans","highlighting a puzzling contrast between octopus intelligence and traits usually linked to simpler cognition","arguing that octopuses are not actually intelligent","comparing octopus lifespan to that of other sea creatures in detail"],
+    correct:1,
+    explain:"The passage centers on the puzzle: high intelligence paired with traits (solitary, short-lived) usually linked to simpler cognition." },
+  { id:'r65', section:'Reading', topic:'Central Ideas',
+    passage:"Braille was not invented by an educator but by a blind fifteen-year-old, Louis Braille, adapting a more complicated military code originally designed for soldiers to read messages silently at night. His simplified version, initially resisted by sighted instructors at his own school, was not officially adopted there until after his death.",
+    text:"Which choice best states the main idea of the passage?",
+    choices:["Military code is more effective than Braille for silent reading.","A young inventor's simplified system faced resistance before being recognized, even at the very institution meant to benefit from it.","Sighted instructors invented Braille collaboratively.","Louis Braille lived a long and widely celebrated life."],
+    correct:1,
+    explain:"The passage's arc — young inventor, resistance, posthumous adoption — centers on delayed recognition of his system." },
+  { id:'r66', section:'Reading', topic:'Central Ideas',
+    passage:"The introduction of gray wolves to Yellowstone in 1995 was expected mainly to control elk populations. Ecologists later documented a cascading effect far beyond that goal: as elk changed their grazing patterns to avoid wolves, riverside vegetation recovered, which in turn stabilized riverbanks and even altered the paths of some rivers within the park.",
+    text:"The passage as a whole is primarily concerned with:",
+    choices:["arguing that wolves should never have been reintroduced","describing a far larger ecological effect than the reintroduction's original, narrower goal anticipated","comparing Yellowstone to other national parks","criticizing ecologists for underestimating elk populations"],
+    correct:1,
+    explain:"The passage explicitly contrasts the narrow original goal (elk control) with the much larger cascading effect that followed." },
+  { id:'r67', section:'Reading', topic:'Central Ideas',
+    passage:"For decades, the standard treatment for a common stomach ulcer targeted stress and diet, since doctors assumed no bacteria could survive the stomach's acidic environment. One researcher, convinced otherwise, eventually drank a culture of bacteria himself to prove they caused ulcers, a demonstration that helped overturn decades of medical consensus within a few years.",
+    text:"Which choice best states the central idea of the passage?",
+    choices:["Stress and diet are the only real causes of stomach ulcers.","A long-standing medical assumption was overturned through a researcher's dramatic self-demonstration.","Doctors today still disagree about what causes ulcers.","Bacteria cannot survive in the human stomach."],
+    correct:1,
+    explain:"The passage's central movement is from a long-standing assumption to its overturning via a dramatic self-experiment." },
+  { id:'r68', section:'Reading', topic:'Central Ideas',
+    passage:"Highway engineers once assumed that adding lanes was the most reliable way to reduce traffic congestion. Long-term studies across multiple cities have instead found that added highway capacity is often filled by new drivers within a few years, a phenomenon now commonly cited as evidence that lane expansion alone rarely produces lasting congestion relief.",
+    text:"The passage is primarily concerned with:",
+    choices:["arguing that highways should never be built","complicating a common assumption about traffic engineering with long-term evidence","describing the process of highway construction","comparing driving habits in different countries"],
+    correct:1,
+    explain:"The passage moves from a common assumption to evidence that complicates it — that movement is the central concern." },
+  { id:'r69', section:'Reading', topic:'Central Ideas',
+    passage:"Penicillin's discovery is often told as a story of sudden accident: a contaminated petri dish, a lucky observation. Less commonly told is that the mold's antibiotic potential sat mostly unexploited for over a decade after its discovery, until a separate team of researchers developed the techniques needed to mass-produce it reliably, without which the original discovery might have remained a scientific curiosity.",
+    text:"Which choice best states the main idea of the passage?",
+    choices:["Penicillin was discovered entirely by careful, deliberate research.","A famous accidental discovery required a second, less-celebrated breakthrough to become practically useful.","The original discovery of penicillin has been widely exaggerated.","Mass production techniques are more important than any scientific discovery."],
+    correct:1,
+    explain:"The passage's central point is that the famous accident needed a second, less-known breakthrough to matter practically." },
+  { id:'r70', section:'Reading', topic:'Central Ideas',
+    passage:"A city known for its car-dependent sprawl began, somewhat reluctantly, converting a handful of downtown parking lots into small public parks. Business owners near the new parks, who had initially opposed losing parking spaces, reported increased foot traffic and sales within the first year, a result that prompted the city to expand the program to a dozen additional lots.",
+    text:"The passage as a whole is primarily concerned with:",
+    choices:["describing the technical process of building a public park","showing how an initially opposed change produced results that led to its expansion","criticizing business owners for their outdated views","comparing this city's parking policy to other cities in detail"],
+    correct:1,
+    explain:"The passage's arc — initial opposition, positive results, program expansion — centers on that reversal." },
+  { id:'r71', section:'Reading', topic:'Central Ideas',
+    passage:"Rosalind Franklin's X-ray diffraction images were essential to identifying the double-helix structure of DNA, yet her data was shared with competing researchers without her direct knowledge, and the resulting scientific credit and prizes largely bypassed her, a gap in recognition that has only been more fully addressed by historians in recent decades.",
+    text:"Which choice best states the central idea of the passage?",
+    choices:["DNA's structure remains a mystery to modern scientists.","A researcher's essential contribution was used without full credit at the time, a gap later addressed by historians.","Competing researchers worked entirely independently of one another.","X-ray imaging is no longer used in genetic research."],
+    correct:1,
+    explain:"The passage centers on Franklin's essential but uncredited contribution and its later historical reassessment." },
+  { id:'r72', section:'Reading', topic:'Central Ideas',
+    passage:"A small nonprofit initially built an app to help local farmers track weather patterns. Within a year, unexpected demand came from an entirely different group: home gardeners using it to time when to plant vegetables, a use case so much larger than the original farming audience that the nonprofit redesigned its entire interface around casual gardeners instead.",
+    text:"Which choice best states the main idea of the passage?",
+    choices:["Nonprofits should never build technology products.","An app's actual dominant user base turned out to be very different from its original intended audience.","Farmers and gardeners have identical needs.","The nonprofit failed to find any users for its app."],
+    correct:1,
+    explain:"The passage's central point is the mismatch between the app's intended audience and its actual dominant user base." },
+
+  // ============================================================
+  // WRITING — Sentence Boundaries (12 more)
+  // ============================================================
+  { id:'w37', section:'Writing', topic:'Sentence Boundaries',
+    text:"Choose the correctly punctuated sentence:",
+    choices:["The flight was delayed, passengers grew increasingly frustrated.","The flight was delayed; passengers grew increasingly frustrated.","The flight was delayed passengers grew increasingly frustrated.","The flight was delayed, and, passengers grew increasingly frustrated."],
+    correct:1,
+    explain:"The first is a comma splice, the third a run-on, and the fourth has an unnecessary comma after 'and.' The semicolon correctly joins the two clauses." },
+  { id:'w38', section:'Writing', topic:'Sentence Boundaries',
+    text:"Choose the correctly punctuated version of: \u201cThe lecture ran long students began packing up their notebooks.\u201d",
+    choices:["ran long students","ran long; students","ran long, students","ran long and, students"],
+    correct:1,
+    explain:"Both parts are independent clauses; a semicolon is needed rather than nothing or a comma alone." },
+  { id:'w39', section:'Writing', topic:'Sentence Boundaries',
+    text:"Which choice completes the sentence with correct punctuation? \u201cEmployees ______ will be eligible for the bonus.\u201d",
+    choices:[", who met their quarterly targets,","who met their quarterly targets",", who met their quarterly targets","who met their quarterly targets,"],
+    correct:1,
+    explain:"'Who met their quarterly targets' restricts which employees are meant, so it's essential information and should NOT be set off by commas." },
+  { id:'w40', section:'Writing', topic:'Sentence Boundaries',
+    text:"Choose the correctly punctuated version of: \u201cThe budget was tight, the team still delivered the project on time.\u201d",
+    choices:["tight, the team","tight the team","tight; the team","tight, so, the team"],
+    correct:2,
+    explain:"This is a comma splice as written. A semicolon correctly joins the two independent clauses." },
+  { id:'w41', section:'Writing', topic:'Sentence Boundaries',
+    text:"Choose the correctly punctuated sentence:",
+    choices:["The novel, praised by critics, became, an instant bestseller.","The novel praised by critics became an instant bestseller.","The novel, praised by critics, became an instant bestseller.","The novel, praised by critics became an instant bestseller."],
+    correct:2,
+    explain:"'Praised by critics' is nonessential information and must be set off by commas on both sides." },
+  { id:'w42', section:'Writing', topic:'Sentence Boundaries',
+    text:"Choose the correctly punctuated version of: \u201cThe workshop was excellent attendees asked to schedule a follow-up session.\u201d",
+    choices:["was excellent attendees","was excellent; attendees","was excellent, attendees","was excellent and, attendees"],
+    correct:1,
+    explain:"Both parts are independent clauses; as written it's a run-on, and a semicolon is needed." },
+  { id:'w43', section:'Writing', topic:'Sentence Boundaries',
+    text:"Choose the correctly punctuated sentence:",
+    choices:["The volcano had been dormant for centuries, geologists were caught off guard.","The volcano had been dormant for centuries; geologists were caught off guard.","The volcano had been dormant for centuries geologists were caught off guard.","The volcano had been dormant for centuries, so, geologists were caught off guard."],
+    correct:1,
+    explain:"The first is a comma splice, the third a run-on, and the fourth has an unnecessary comma. The semicolon correctly joins the clauses." },
+  { id:'w44', section:'Writing', topic:'Sentence Boundaries',
+    text:"Choose the correctly punctuated version of: \u201cThe interview lasted two hours, both candidates felt confident afterward.\u201d",
+    choices:["hours, both","hours both","hours; both","hours, but, both"],
+    correct:2,
+    explain:"This is a comma splice as written. A semicolon correctly separates the two independent clauses." },
+  { id:'w45', section:'Writing', topic:'Sentence Boundaries',
+    text:"Choose the correctly punctuated sentence:",
+    choices:["Startled by the noise, the cat, leapt off the couch.","Startled by the noise the cat leapt off the couch.","Startled by the noise, the cat leapt off the couch.","Startled, by the noise, the cat leapt off the couch."],
+    correct:2,
+    explain:"An introductory phrase should be followed by one comma before the main clause, with no comma separating subject from verb." },
+  { id:'w46', section:'Writing', topic:'Sentence Boundaries',
+    text:"Choose the correctly punctuated version of: \u201cThe paint had barely dried the movers arrived early anyway.\u201d",
+    choices:["barely dried the movers","barely dried; the movers","barely dried, the movers","barely dried and, the movers"],
+    correct:1,
+    explain:"Both parts are independent clauses; as written it's a run-on, and a semicolon is required." },
+  { id:'w47', section:'Writing', topic:'Sentence Boundaries',
+    text:"Which choice completes the sentence with correct punctuation? \u201cThe award ______ was presented at the annual banquet.\u201d",
+    choices:[", for outstanding service,","for outstanding service",", for outstanding service","for outstanding service,"],
+    correct:1,
+    explain:"'For outstanding service' restricts which award is meant, so it's essential and should not be set off by commas." },
+  { id:'w48', section:'Writing', topic:'Sentence Boundaries',
+    text:"Choose the correctly punctuated version of: \u201cThe signal kept dropping, the technician suspected a loose cable.\u201d",
+    choices:["dropping, the technician","dropping the technician","dropping; the technician","dropping, and, the technician"],
+    correct:2,
+    explain:"This is a comma splice as written. A semicolon correctly joins the two independent clauses." },
+
+  // ============================================================
+  // WRITING — Transitions (12 more)
+  // ============================================================
+  { id:'w49', section:'Writing', topic:'Transitions',
+    text:"The lab results were delayed by a full week. ______, the research team adjusted their publication timeline. Which transition best fits the blank?",
+    choices:["Similarly","As a result","For example","In contrast"],
+    correct:1,
+    explain:"Adjusting the timeline is a direct consequence of the delay, which calls for 'As a result.'" },
+  { id:'w50', section:'Writing', topic:'Transitions',
+    text:"The old bridge had survived two centuries of storms. ______, a single mild earthquake left it structurally unsound. Which transition best fits the blank?",
+    choices:["Likewise","Surprisingly","Consequently","For instance"],
+    correct:1,
+    explain:"The unexpected contrast between long durability and sudden failure calls for 'Surprisingly.'" },
+  { id:'w51', section:'Writing', topic:'Transitions',
+    text:"Ticket prices for the festival rose sharply this year. ______, attendance dropped by nearly a third. Which transition best fits the blank?",
+    choices:["Similarly","As a result","However","For example"],
+    correct:1,
+    explain:"The drop in attendance is a direct consequence of the price increase, which calls for 'As a result.'" },
+  { id:'w52', section:'Writing', topic:'Transitions',
+    text:"The startup had no marketing budget for its first year. ______, word-of-mouth alone drove most of its early growth. Which transition best fits the blank?",
+    choices:["Nevertheless","Therefore","In addition","For instance"],
+    correct:0,
+    explain:"Growth happening despite no budget is a contrast, which calls for 'Nevertheless.'" },
+  { id:'w53', section:'Writing', topic:'Transitions',
+    text:"The professor's lectures were famously dense and difficult to follow. ______, students consistently ranked her among their favorite instructors. Which transition best fits the blank?",
+    choices:["Similarly","Nonetheless","As a result","For example"],
+    correct:1,
+    explain:"Being a favorite despite difficult lectures is a contrast, which calls for 'Nonetheless.'" },
+  { id:'w54', section:'Writing', topic:'Transitions',
+    text:"The region experienced record rainfall throughout the spring. ______, local farmers reported some of their best harvests in a decade. Which transition best fits the blank?",
+    choices:["Surprisingly","Therefore","In contrast","For instance"],
+    correct:0,
+    explain:"An unexpectedly positive outcome from heavy rainfall calls for 'Surprisingly.'" },
+  { id:'w55', section:'Writing', topic:'Transitions',
+    text:"The company's stock price had been flat for months. ______, a single product announcement sent shares up twenty percent overnight. Which transition best fits the blank?",
+    choices:["Likewise","Suddenly","Meanwhile","For example"],
+    correct:1,
+    explain:"An abrupt change after a period of flatness calls for 'Suddenly.'" },
+  { id:'w56', section:'Writing', topic:'Transitions',
+    text:"The committee had rejected similar proposals twice before. ______, this year's version passed unanimously. Which transition best fits the blank?",
+    choices:["Similarly","Yet","For instance","In addition"],
+    correct:1,
+    explain:"The contrast with two prior rejections calls for 'Yet.'" },
+  { id:'w57', section:'Writing', topic:'Transitions',
+    text:"The hikers had packed enough food for three days. ______, the trail closure forced them to stretch their supplies across five. Which transition best fits the blank?",
+    choices:["Similarly","However","Therefore","For example"],
+    correct:1,
+    explain:"The contrast between planned supplies and the actual situation calls for 'However.'" },
+  { id:'w58', section:'Writing', topic:'Transitions',
+    text:"The museum's attendance had declined for years. ______, a single viral social media post reversed the trend almost overnight. Which transition best fits the blank?",
+    choices:["Likewise","Unexpectedly","Consequently","For instance"],
+    correct:1,
+    explain:"A sudden, surprising reversal calls for 'Unexpectedly.'" },
+  { id:'w59', section:'Writing', topic:'Transitions',
+    text:"The team had lost their last six games. ______, they won the championship the following season. Which transition best fits the blank?",
+    choices:["Similarly","Remarkably","Consequently","For example"],
+    correct:1,
+    explain:"An unexpected, striking turnaround calls for 'Remarkably.'" },
+  { id:'w60', section:'Writing', topic:'Transitions',
+    text:"Electric vehicle sales rose steadily for a decade. ______, sales growth slowed sharply once government subsidies expired. Which transition best fits the blank?",
+    choices:["Likewise","However","For instance","In addition"],
+    correct:1,
+    explain:"The contrast between steady growth and a sharp slowdown calls for 'However.'" },
+
+  // ============================================================
+  // WRITING — Standard English Conventions (12 more)
+  // ============================================================
+  { id:'w61', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the correct verb: \u201cThe jury ______ reached a unanimous verdict.\u201d",
+    choices:["has","have","were","are"],
+    correct:0,
+    explain:"'Jury' is a collective noun treated as a single unit here, so the singular verb 'has' is correct." },
+  { id:'w62', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the correctly formed sentence:",
+    choices:["Walking into the room, the lights flickered suddenly.","Walking into the room, she noticed the lights flicker suddenly.","The lights flickered suddenly, walking into the room.","Walking into the room the lights, flickered suddenly."],
+    correct:1,
+    explain:"'Walking into the room' must modify a person, not 'the lights.' Only this choice correctly attaches the phrase to 'she.'" },
+  { id:'w63', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the correct verb: \u201cYesterday, the dog ______ in the sun for hours.\u201d",
+    choices:["laid","lay","lain","lying"],
+    correct:1,
+    explain:"The past tense of the intransitive verb 'lie' (to recline) is 'lay.' 'Laid' is the past tense of the transitive verb 'lay' (to put something down)." },
+  { id:'w64', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the correct word: \u201cThe new policy will likely ______ productivity across the department.\u201d",
+    choices:["effect","affect","affects","effects"],
+    correct:1,
+    explain:"'Affect' as a verb means to influence, which fits here. 'Effect' is typically the noun (a result)." },
+  { id:'w65', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the correct word: \u201cThe new checkout process requires ______ steps than the old one.\u201d",
+    choices:["less","fewer","lesser","few"],
+    correct:1,
+    explain:"'Fewer' is used for countable nouns like 'steps'; 'less' is used for uncountable quantities." },
+  { id:'w66', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the correct word: \u201cThe prize money was divided ______ the four finalists.\u201d",
+    choices:["between","among","amongst each","betwixt"],
+    correct:1,
+    explain:"'Among' is used for three or more people or things; 'between' is reserved for exactly two." },
+  { id:'w67', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the correct comparison: \u201cOf the three finalists, the second speaker was clearly the ______ prepared.\u201d",
+    choices:["more","most","much more","best prepared of the two"],
+    correct:1,
+    explain:"When comparing three or more items, the superlative form ('most') is correct, not the comparative ('more')." },
+  { id:'w68', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the correctly formed sentence:",
+    choices:["The teachers' lounge was recently renovated.","The teacher's lounge was recently renovated, shared by all staff.","The teachers lounge was recently renovated.","The teachers's lounge was recently renovated."],
+    correct:0,
+    explain:"'Teachers'' (plural possessive) correctly shows the lounge belongs to multiple teachers." },
+  { id:'w69', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the correct verb: \u201cThe coach insisted that every player ______ on time for practice.\u201d",
+    choices:["was","is","be","were"],
+    correct:2,
+    explain:"After a verb like 'insisted that,' the subjunctive mood requires the base form 'be,' regardless of subject or tense." },
+  { id:'w70', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the most concise and correct version:",
+    choices:["The reason why the meeting was postponed is because the venue was double-booked.","The meeting was postponed because the venue was double-booked.","The meeting was postponed due to the fact that the venue was double-booked.","The reason the meeting was postponed was because of the venue being double-booked."],
+    correct:1,
+    explain:"This choice states the same information clearly and without the redundant 'reason why...is because' or wordy 'due to the fact that' constructions." },
+  { id:'w71', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the correctly formed sentence:",
+    choices:["The coach told the team to warm up, stretching, and to run three laps.","The coach told the team to warm up, to stretch, and to run three laps.","The coach told the team to warm up, stretch, and running three laps.","The coach told the team warming up, stretch, and to run three laps."],
+    correct:1,
+    explain:"Parallel structure requires all three items to match in form. This choice keeps all three as consistent infinitives (to warm up, to stretch, to run)." },
+  { id:'w72', section:'Writing', topic:'Standard English Conventions',
+    text:"Choose the correctly formed sentence:",
+    choices:["She finished her homework, ate dinner, and goes to bed early.","She finished her homework, ate dinner, and went to bed early.","She finishes her homework, ate dinner, and went to bed early.","She finished her homework, eats dinner, and went to bed early."],
+    correct:1,
+    explain:"All three verbs must stay in the same past tense for consistency: finished, ate, went." }
+];
+
+const TOPICS = [...new Set(QUESTION_BANK.map(q => q.topic))];
+
+// =========================================================
+// Storage helpers (persists across visits, this device/account)
+// =========================================================
+// =========================================================
+// Storage — talks to the real backend when logged in.
+// When NOT logged in, practice still works but nothing is saved
+// (a guest-mode in-memory array), since there's no account to attach it to.
+// =========================================================
+let isLoggedIn = false;
+let guestAttempts = []; // not persisted — cleared on refresh
+
+async function checkLogin(){
+  try{
+    const res = await fetch('/api/me', { credentials: 'same-origin' });
+    isLoggedIn = res.ok;
+    return isLoggedIn ? await res.json() : null;
+  }catch(e){
+    isLoggedIn = false;
+    return null;
+  }
+}
+
+async function loadAttempts(){
+  if(!isLoggedIn) return guestAttempts;
+  try{
+    const res = await fetch('/api/attempts', { credentials: 'same-origin' });
+    if(!res.ok) return [];
+    return await res.json();
+  }catch(e){ return []; }
+}
+async function saveAttempt(attempt){
+  if(!isLoggedIn){
+    guestAttempts.push(attempt);
+    return;
+  }
+  try{
+    await fetch('/api/attempts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify(attempt)
+    });
+  }catch(e){ console.error('Could not save attempt', e); }
+}
+async function loadTarget(){
+  if(!isLoggedIn) return '';
+  const me = await checkLogin();
+  return me && me.target_score ? String(me.target_score) : '';
+}
+async function saveTarget(val){
+  if(!isLoggedIn) return;
+  try{
+    await fetch('/api/target', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify({ value: val })
+    });
+  }catch(e){ console.error('Could not save target', e); }
+}
+
+// =========================================================
+// Analytics + score estimate — computed from real attempt history
+// =========================================================
+function computeStats(attempts){
+  const total = attempts.length;
+  const correct = attempts.filter(a => a.correct).length;
+  const overallAccuracy = total ? correct/total : null;
+
+  const byTopic = {};
+  attempts.forEach(a => {
+    if(!byTopic[a.topic]) byTopic[a.topic] = {correct:0, total:0, section:a.section};
+    byTopic[a.topic].total++;
+    if(a.correct) byTopic[a.topic].correct++;
+  });
+
+  return { total, correct, overallAccuracy, byTopic };
+}
+
+function estimateScore(overallAccuracy){
+  if(overallAccuracy === null) return null;
+  // Simplified practice-based estimate: maps accuracy % onto the 400–1600 scale.
+  // This is NOT an official College Board conversion — real scaled scoring uses
+  // non-linear per-section conversion tables. Labeled clearly as an estimate.
+  const raw = 400 + overallAccuracy * 1200;
+  const rounded = Math.round(raw / 10) * 10;
+  return Math.max(400, Math.min(1600, rounded));
+}
+
+async function renderDashboard(){
+  await checkLogin();
+  const attempts = await loadAttempts();
+  const stats = computeStats(attempts);
+
+  // Score block
+  const scoreBlock = document.getElementById('scoreBlock');
+  const estimate = estimateScore(stats.overallAccuracy);
+  if(estimate === null){
+    scoreBlock.innerHTML = '<p class="empty-note">Answer a few questions to generate your first estimate.</p>';
+  }else{
+    scoreBlock.innerHTML = `
+      <div class="score-row">
+        <span class="score-big">${estimate}</span>
+        <span class="score-range">± 40 · practice-based estimate, not an official score</span>
+      </div>`;
+  }
+
+  // Target + gap
+  const target = await loadTarget();
+  document.getElementById('targetInput').value = target || '';
+  const gapNote = document.getElementById('gapNote');
+  if(target && estimate !== null){
+    const gap = parseInt(target,10) - estimate;
+    gapNote.textContent = gap > 0 ? `${gap} points to your target, based on current accuracy.` : `You're at or above your target based on current accuracy — nice.`;
+  }else{
+    gapNote.textContent = '';
+  }
+
+  // Accuracy block
+  const accBlock = document.getElementById('accuracyBlock');
+  if(stats.total === 0){
+    accBlock.innerHTML = '<p class="empty-note">No attempts yet.</p>';
+  }else{
+    const pct = Math.round(stats.overallAccuracy * 100);
+    accBlock.innerHTML = `
+      <div class="accuracy-big">${pct}%</div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
+      <p class="empty-note" style="margin-top:10px;">${stats.correct} of ${stats.total} answered correctly</p>`;
+  }
+
+  // Weak topics
+  const weakList = document.getElementById('weakList');
+  const topicEntries = Object.entries(stats.byTopic);
+  if(topicEntries.length === 0){
+    weakList.innerHTML = '<li class="empty-note" style="list-style:none;">Practice a few questions to surface weak spots.</li>';
+  }else{
+    const sorted = topicEntries
+      .map(([topic, d]) => ({ topic, section:d.section, pct: d.correct/d.total, total:d.total }))
+      .sort((a,b) => a.pct - b.pct)
+      .slice(0,5);
+    weakList.innerHTML = sorted.map(t => `
+      <li class="weak-item">
+        <span class="topic">${t.section} — ${t.topic}</span>
+        <span class="pct ${t.pct >= 0.7 ? 'ok' : ''} mono">${Math.round(t.pct*100)}%</span>
+      </li>
+    `).join('');
+  }
+
+  // Topic picker for targeted practice
+  const picker = document.getElementById('topicPicker');
+  picker.innerHTML = TOPICS.map(t => `<button class="topic-chip" data-topic="${t}">${t}</button>`).join('');
+  picker.classList.add('show');
+  picker.querySelectorAll('.topic-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      picker.querySelectorAll('.topic-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      selectedTopic = chip.dataset.topic;
+      document.getElementById('startTargeted').disabled = false;
+      document.getElementById('startTargeted').textContent = `Practice: ${selectedTopic}`;
+    });
+  });
+}
+
+document.getElementById('targetInput').addEventListener('change', async (e) => {
+  await saveTarget(e.target.value);
+  renderDashboard();
+});
+
+// =========================================================
+// Test-taking interface
+// =========================================================
+let selectedTopic = null;
+let diagnosticCount = 9;
+let sessionQuestions = [];
+let sessionIndex = 0;
+let sessionAnswers = {}; // qid -> {selectedIndex, correct}
+let sessionFlags = {};   // qid -> bool
+let timerSeconds = 0;
+let timerInterval = null;
+let timerHidden = false;
+let strikeMode = false;
+let strikeState = {}; // qid -> Set of struck indices
+
+document.querySelectorAll('#lengthPicker [data-len]').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('#lengthPicker [data-len]').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    diagnosticCount = parseInt(chip.dataset.len, 10);
+    const tag = document.getElementById('diagnosticTag');
+    tag.textContent = diagnosticCount === 9
+      ? '9 questions · one per skill area'
+      : `${diagnosticCount} questions · spread evenly across skill areas`;
+  });
+});
+
+function buildSession(mode){
+  if(mode === 'diagnostic'){
+    // Cycle through topics one at a time (each topic's own pool shuffled and
+    // drawn without repeats) until we've reached the chosen count, so the
+    // diagnostic surveys every skill area evenly regardless of length.
+    const shuffledTopics = [...TOPICS].sort(() => Math.random() - 0.5);
+    const pools = {};
+    TOPICS.forEach(t => {
+      pools[t] = QUESTION_BANK.filter(q => q.topic === t).sort(() => Math.random() - 0.5);
+    });
+    const picks = [];
+    let ti = 0;
+    let safety = 0;
+    while(picks.length < diagnosticCount && safety < 2000){
+      const topic = shuffledTopics[ti % shuffledTopics.length];
+      if(pools[topic].length > 0){
+        picks.push(pools[topic].shift());
+      }
+      ti++;
+      safety++;
+    }
+    return picks.sort(() => Math.random() - 0.5);
+  }
+  if(mode === 'targeted' && selectedTopic){
+    return QUESTION_BANK.filter(q => q.topic === selectedTopic);
+  }
+  return [];
+}
+
+document.querySelectorAll('[data-mode]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const mode = btn.dataset.mode;
+    sessionQuestions = buildSession(mode);
+    if(sessionQuestions.length === 0) return;
+    sessionIndex = 0;
+    sessionAnswers = {};
+    sessionFlags = {};
+    strikeState = {};
+    startTimer();
+    document.getElementById('dashboardView').classList.add('hide');
+    document.getElementById('testView').classList.add('show');
+    renderNavigator();
+    renderQuestion();
+  });
+});
+
+document.getElementById('exitBtn').addEventListener('click', async () => {
+  stopTimer();
+  document.getElementById('testView').classList.remove('show');
+  document.getElementById('dashboardView').classList.remove('hide');
+  await renderDashboard();
+});
+
+function startTimer(){
+  timerSeconds = 0;
+  updateTimerDisplay();
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timerSeconds++;
+    updateTimerDisplay();
+  }, 1000);
+}
+function stopTimer(){ clearInterval(timerInterval); }
+function updateTimerDisplay(){
+  const m = Math.floor(timerSeconds/60).toString().padStart(2,'0');
+  const s = (timerSeconds%60).toString().padStart(2,'0');
+  document.getElementById('timerDisplay').textContent = `${m}:${s}`;
+}
+document.getElementById('timerToggle').addEventListener('click', (e) => {
+  timerHidden = !timerHidden;
+  document.getElementById('timerDisplay').classList.toggle('hidden-timer', timerHidden);
+  e.target.textContent = timerHidden ? '👁 Show timer' : '👁 Hide timer';
+  e.target.classList.toggle('on', timerHidden);
+});
+document.getElementById('strikeToggle').addEventListener('click', (e) => {
+  strikeMode = !strikeMode;
+  e.target.classList.toggle('on', strikeMode);
+  document.getElementById('qcard').classList.toggle('strike-mode', strikeMode);
+});
+document.getElementById('flagBtn').addEventListener('click', (e) => {
+  const q = sessionQuestions[sessionIndex];
+  sessionFlags[q.id] = !sessionFlags[q.id];
+  e.target.classList.toggle('on', sessionFlags[q.id]);
+  renderNavigator();
+});
+
+function renderNavigator(){
+  const nav = document.getElementById('navigator');
+  nav.innerHTML = sessionQuestions.map((q,i) => {
+    const answered = sessionAnswers[q.id] !== undefined;
+    const flagged = sessionFlags[q.id];
+    const current = i === sessionIndex;
+    return `<div class="nav-dot ${current?'current':''} ${answered?'answered':''} ${flagged?'flagged':''}" data-idx="${i}">${i+1}</div>`;
+  }).join('');
+  nav.querySelectorAll('.nav-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      sessionIndex = parseInt(dot.dataset.idx,10);
+      renderQuestion();
+      renderNavigator();
+    });
+  });
+}
+
+function renderQuestion(){
+  const q = sessionQuestions[sessionIndex];
+  const card = document.getElementById('qcard');
+  const alreadyAnswered = sessionAnswers[q.id];
+  if(!strikeState[q.id]) strikeState[q.id] = new Set();
+
+  document.getElementById('flagBtn').classList.toggle('on', !!sessionFlags[q.id]);
+
+  const letters = ['A','B','C','D'];
+  card.innerHTML = `
+    <div class="qmeta">
+      <span class="tag">${q.section} · ${q.topic}</span>
+      <span class="tag">Question ${sessionIndex+1} of ${sessionQuestions.length}</span>
+    </div>
+    ${q.passage ? `<div class="passage-box">${q.passage}</div>` : ''}
+    <div class="qtext">${q.text}</div>
+    <div class="choices" id="choicesWrap"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="qcard-foot">
+      <div class="left-actions">
+        <button class="btn btn-ghost btn-sm" id="prevBtn" ${sessionIndex===0?'disabled':''}>← Previous</button>
+      </div>
+      <button class="btn btn-primary btn-sm" id="nextBtn" ${sessionIndex===sessionQuestions.length-1 ? '' : ''}>${sessionIndex===sessionQuestions.length-1 ? 'Finish session' : 'Next question →'}</button>
+    </div>
+  `;
+
+  const choicesWrap = document.getElementById('choicesWrap');
+  q.choices.forEach((choiceText, i) => {
+    const row = document.createElement('div');
+    row.className = 'choice-row';
+    const struckClass = strikeState[q.id].has(i) ? 'struck' : '';
+    row.innerHTML = `
+      <button class="strike-toggle" data-i="${i}">✕</button>
+      <button class="choice ${struckClass}" data-i="${i}">
+        <span class="letter">${letters[i]}</span><span>${choiceText}</span>
+      </button>
+    `;
+    choicesWrap.appendChild(row);
+  });
+
+  // strike toggles
+  choicesWrap.querySelectorAll('.strike-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const i = parseInt(btn.dataset.i,10);
+      if(strikeState[q.id].has(i)) strikeState[q.id].delete(i); else strikeState[q.id].add(i);
+      renderQuestion();
+    });
+  });
+
+  // choice clicks
+  const choiceBtns = choicesWrap.querySelectorAll('.choice');
+  choiceBtns.forEach(btn => {
+    const i = parseInt(btn.dataset.i,10);
+    if(alreadyAnswered){
+      btn.disabled = true;
+      if(i === q.correct) btn.classList.add('correct');
+      if(i === alreadyAnswered.selectedIndex && i !== q.correct) btn.classList.add('wrong');
+    }
+    btn.addEventListener('click', async () => {
+      if(sessionAnswers[q.id]) return;
+      const isCorrect = i === q.correct;
+      sessionAnswers[q.id] = { selectedIndex:i, correct:isCorrect };
+      await saveAttempt({ id:q.id, section:q.section, topic:q.topic, correct:isCorrect, ts:Date.now() });
+      if(isCorrect){ triggerConfetti(btn); } else { triggerWrongPulse(); }
+      renderQuestion();
+      renderNavigator();
+    });
+  });
+
+  const feedback = document.getElementById('feedback');
+  if(alreadyAnswered){
+    feedback.classList.add('show');
+    feedback.innerHTML = `<b>${alreadyAnswered.correct ? 'Correct.' : 'Not quite.'}</b> ${q.explain}
+      <div><button class="ai-btn" id="aiBtn">✦ Ask AI to explain it differently</button></div>
+      <div class="ai-response" id="aiResponse"></div>`;
+    document.getElementById('aiBtn').addEventListener('click', () => askAI(q, alreadyAnswered));
+  }else{
+    feedback.classList.remove('show');
+  }
+
+  document.getElementById('prevBtn').addEventListener('click', () => {
+    if(sessionIndex > 0){ sessionIndex--; renderQuestion(); renderNavigator(); }
+  });
+  document.getElementById('nextBtn').addEventListener('click', async () => {
+    if(sessionIndex < sessionQuestions.length - 1){
+      sessionIndex++;
+      renderQuestion();
+      renderNavigator();
+    }else{
+      stopTimer();
+      document.getElementById('testView').classList.remove('show');
+      document.getElementById('dashboardView').classList.remove('hide');
+      await renderDashboard();
+    }
+  });
+}
+
+// =========================================================
+// AI explanation — real server-side call. The API key lives only in
+// the server's .env, never in this file.
+// =========================================================
+async function askAI(question, answerRecord){
+  const btn = document.getElementById('aiBtn');
+  const responseBox = document.getElementById('aiResponse');
+  responseBox.classList.add('show');
+
+  if(!isLoggedIn){
+    responseBox.textContent = 'Log in to ask the AI for a tailored explanation.';
+    return;
+  }
+
+  btn.textContent = '✦ Thinking…';
+  btn.disabled = true;
+  responseBox.textContent = '';
+
+  try{
+    const res = await fetch('/api/explain', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify({ question, answerRecord })
+    });
+    const data = await res.json();
+    responseBox.textContent = res.ok
+      ? (data.explanation || "Couldn't generate an explanation just now — try again.")
+      : (data.error || "Couldn't generate an explanation just now — try again.");
+  }catch(err){
+    responseBox.textContent = 'Could not reach the explanation service — try again in a moment.';
+  }
+  btn.textContent = '✦ Ask again for another angle';
+  btn.disabled = false;
+}
+
+// Account widget — waits for the real session check before rendering,
+// so it never shows "log in" while a valid session is still loading.
+async function renderAccountWidget(){
+  const widget = document.getElementById('accountWidget');
+  const me = await checkLogin();
+  if(me){
+    widget.innerHTML = `Hi, ${me.name} · <a href="#" id="logoutLink" style="color:var(--sky-soft); text-decoration:underline;">Log out</a>`;
+    document.getElementById('logoutLink').addEventListener('click', async (e) => {
+      e.preventDefault();
+      await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' });
+      window.location.reload();
+    });
+  }else{
+    widget.innerHTML = `<a href="login.html" style="color:var(--sky-soft); text-decoration:underline;">Log in to save progress</a>`;
+  }
+}
+renderAccountWidget();
+
+// Scroll-reveal: pop elements into view as they scroll into the viewport.
+// One-time trigger per element (doesn't re-hide on scrolling back up).
+(function initScrollReveal(){
+  const revealEls = document.querySelectorAll('.reveal');
+  if(REDUCED_MOTION){
+    revealEls.forEach(el => el.classList.add('revealed'));
+    return;
+  }
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('revealed');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -30px 0px' });
+  revealEls.forEach(el => observer.observe(el));
+})();
+
+// Init
+renderDashboard();
+</script>
+
+</body>
+</html>

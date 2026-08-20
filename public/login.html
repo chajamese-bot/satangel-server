@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log in — SAT Angel</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Cpath d='M13 1 L15.2 10.8 L25 13 L15.2 15.2 L13 25 L10.8 15.2 L1 13 L10.8 10.8 Z' fill='%23E7B85C'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep:#0B1229; --card:#182352; --sky:#6FB8E8; --sky-soft:#BFE1F7;
+    --gold:#E7B85C; --gold-soft:#F4D999; --amber:#F0A202;
+    --paper:#F3F5FB; --paper-dim:#A9B2D4; --line:rgba(243,245,251,0.12); --rose:#E08585;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; min-height:100vh; background:var(--navy-deep); color:var(--paper); font-family:'Inter',sans-serif; display:flex; flex-direction:column; align-items:center; padding:40px 20px;}
+  a{color:inherit; text-decoration:none;}
+  .brand{display:flex; align-items:center; gap:9px; font-family:'Fraunces',serif; font-weight:600; font-size:1.1rem; margin-bottom:34px;}
+
+  .disclosure{
+    max-width:420px; width:100%; background:rgba(231,184,92,0.1); border:1px solid rgba(231,184,92,0.35);
+    border-radius:10px; padding:14px 18px; margin-bottom:22px; font-size:0.82rem; color:var(--gold-soft); line-height:1.5;
+  }
+
+  .auth-card{max-width:420px; width:100%; background:var(--card); border:1px solid var(--line); border-radius:18px; padding:32px;}
+  .tabs{display:flex; gap:6px; background:var(--navy-deep); border-radius:10px; padding:5px; margin-bottom:24px;}
+  .tab{flex:1; text-align:center; padding:9px; border-radius:7px; font-size:0.88rem; font-weight:600; cursor:pointer; color:var(--paper-dim); background:none; border:none; font-family:'Inter',sans-serif;}
+  .tab.active{background:var(--card); color:var(--paper);}
+
+  h1{font-family:'Fraunces',serif; font-size:1.4rem; margin:0 0 6px;}
+  .sub{color:var(--paper-dim); font-size:0.85rem; margin:0 0 24px;}
+
+  .field{margin-bottom:16px;}
+  .field label{display:block; font-size:0.82rem; color:var(--paper-dim); margin-bottom:6px;}
+  .field input{width:100%; background:var(--navy-deep); border:1px solid var(--line); color:var(--paper); border-radius:9px; padding:11px 13px; font-size:0.92rem; font-family:'Inter',sans-serif;}
+  .field input:focus{outline:2px solid var(--gold); outline-offset:1px;}
+  .error{color:var(--rose); font-size:0.82rem; margin:-8px 0 14px; display:none;}
+  .error.show{display:block;}
+
+  .btn{width:100%; font-weight:700; font-size:0.94rem; padding:13px; border-radius:9px; border:none; cursor:pointer; background:linear-gradient(135deg,var(--gold),var(--amber)); color:#2A1B00; margin-top:6px;}
+  .switch-note{text-align:center; font-size:0.84rem; color:var(--paper-dim); margin-top:18px;}
+  .switch-note button{background:none; border:none; color:var(--sky-soft); cursor:pointer; font-size:0.84rem; font-family:'Inter',sans-serif; padding:0;}
+
+  .signed-in-card{max-width:420px; width:100%; background:var(--card); border:1px solid var(--line); border-radius:18px; padding:32px; text-align:center; display:none;}
+  .signed-in-card.show{display:block;}
+  .avatar{width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg,var(--gold),var(--amber)); display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:1.4rem; color:#2A1B00; margin:0 auto 16px;}
+  .signed-in-card h2{font-family:'Fraunces',serif; font-size:1.25rem; margin:0 0 4px;}
+  .signed-in-card p{color:var(--paper-dim); font-size:0.88rem; margin:0 0 22px;}
+  .btn-row{display:flex; gap:10px;}
+  .btn-secondary{flex:1; background:var(--navy-deep); color:var(--paper); border:1px solid var(--line); font-weight:600; font-size:0.88rem; padding:11px; border-radius:9px; cursor:pointer;}
+</style>
+</head>
+<body>
+
+<a href="index.html" class="brand">
+  <svg width="24" height="24" viewBox="0 0 26 26" fill="none"><path d="M13 1 L15.2 10.8 L25 13 L15.2 15.2 L13 25 L10.8 15.2 L1 13 L10.8 10.8 Z" fill="#E7B85C"/></svg>
+  SAT Angel
+</a>
+
+<div class="disclosure">
+  <strong>Note:</strong> accounts are now handled by a real server with hashed passwords and secure sessions. Before opening this to real students, make sure the server is deployed behind HTTPS in production — cookies are only marked secure automatically when the server runs with <code>NODE_ENV=production</code>.
+</div>
+
+<div id="signedOutView">
+  <div class="auth-card">
+    <div class="tabs">
+      <button class="tab active" id="tabLogin">Log in</button>
+      <button class="tab" id="tabSignup">Sign up</button>
+    </div>
+
+    <h1 id="formTitle">Welcome back</h1>
+    <p class="sub" id="formSub">Log in to pick up your practice where you left off on this device.</p>
+
+    <form id="authForm">
+      <div class="field" id="nameField" style="display:none;">
+        <label for="nameInput">Name</label>
+        <input type="text" id="nameInput" placeholder="Alex">
+      </div>
+      <div class="field">
+        <label for="emailInput">Email</label>
+        <input type="email" id="emailInput" placeholder="you@example.com" required>
+      </div>
+      <div class="field">
+        <label for="passwordInput">Password</label>
+        <input type="password" id="passwordInput" placeholder="••••••••" required minlength="8">
+      </div>
+      <div class="error" id="errorMsg"></div>
+      <button type="submit" class="btn" id="submitBtn">Log in</button>
+    </form>
+    <p class="switch-note" id="switchNote">Don't have an account? <button id="switchToSignup">Sign up</button></p>
+  </div>
+</div>
+
+<div class="signed-in-card" id="signedInView">
+  <div class="avatar" id="avatarInitial"></div>
+  <h2 id="welcomeName"></h2>
+  <p id="welcomeEmail"></p>
+  <div class="btn-row">
+    <a href="dashboard.html" class="btn" style="text-decoration:none; display:flex; align-items:center; justify-content:center;">Go to dashboard</a>
+  </div>
+  <button class="btn-secondary" id="logoutBtn" style="width:100%; margin-top:10px;">Log out</button>
+</div>
+
+<script>
+// =========================================================
+// Real account system — talks to the Express backend.
+// The server sets an httpOnly session cookie; this page never
+// touches the password after submitting it once over the wire.
+// =========================================================
+let mode = 'login'; // or 'signup'
+
+const tabLogin = document.getElementById('tabLogin');
+const tabSignup = document.getElementById('tabSignup');
+const nameField = document.getElementById('nameField');
+const formTitle = document.getElementById('formTitle');
+const formSub = document.getElementById('formSub');
+const submitBtn = document.getElementById('submitBtn');
+const switchNote = document.getElementById('switchNote');
+const errorMsg = document.getElementById('errorMsg');
+
+function setMode(newMode){
+  mode = newMode;
+  errorMsg.classList.remove('show');
+  tabLogin.classList.toggle('active', mode === 'login');
+  tabSignup.classList.toggle('active', mode === 'signup');
+  nameField.style.display = mode === 'signup' ? 'block' : 'none';
+  formTitle.textContent = mode === 'login' ? 'Welcome back' : 'Create your account';
+  formSub.textContent = mode === 'login'
+    ? 'Log in to pick up your practice where you left off.'
+    : 'Takes ten seconds — this saves your progress to your account.';
+  submitBtn.textContent = mode === 'login' ? 'Log in' : 'Sign up';
+  switchNote.innerHTML = mode === 'login'
+    ? `Don't have an account? <button id="switchToSignup">Sign up</button>`
+    : `Already have an account? <button id="switchToLogin">Log in</button>`;
+  const switchBtn = document.getElementById(mode === 'login' ? 'switchToSignup' : 'switchToLogin');
+  switchBtn.addEventListener('click', () => setMode(mode === 'login' ? 'signup' : 'login'));
+}
+
+tabLogin.addEventListener('click', () => setMode('login'));
+tabSignup.addEventListener('click', () => setMode('signup'));
+setMode('login');
+
+document.getElementById('authForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('emailInput').value.trim().toLowerCase();
+  const password = document.getElementById('passwordInput').value;
+  const name = document.getElementById('nameInput').value.trim();
+
+  errorMsg.classList.remove('show');
+  submitBtn.disabled = true;
+
+  const endpoint = mode === 'signup' ? '/api/signup' : '/api/login';
+  const body = mode === 'signup' ? { name, email, password } : { email, password };
+
+  try{
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if(!res.ok){
+      errorMsg.textContent = data.error || 'Something went wrong — try again.';
+      errorMsg.classList.add('show');
+      submitBtn.disabled = false;
+      return;
+    }
+    showSignedIn(data.name, data.email);
+  }catch(err){
+    errorMsg.textContent = 'Could not reach the server. Is it running?';
+    errorMsg.classList.add('show');
+  }
+  submitBtn.disabled = false;
+});
+
+function showSignedIn(name, email){
+  document.getElementById('signedOutView').style.display = 'none';
+  document.getElementById('signedInView').classList.add('show');
+  document.getElementById('avatarInitial').textContent = (name || email).charAt(0).toUpperCase();
+  document.getElementById('welcomeName').textContent = `Hi, ${name || 'there'}`;
+  document.getElementById('welcomeEmail').textContent = email;
+}
+
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' });
+  document.getElementById('signedInView').classList.remove('show');
+  document.getElementById('signedOutView').style.display = 'block';
+  document.getElementById('authForm').reset();
+});
+
+// If already logged in (valid session cookie), skip straight to signed-in view
+(async function checkSession(){
+  try{
+    const res = await fetch('/api/me', { credentials: 'same-origin' });
+    if(res.ok){
+      const user = await res.json();
+      showSignedIn(user.name, user.email);
+    }
+  }catch(e){ /* server unreachable — stay on the login form */ }
+})();
+</script>
+
+</body>
+</html>
