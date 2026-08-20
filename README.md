@@ -1,40 +1,63 @@
 # SAT Angel — backend server
 
-A real Express + SQLite backend: hashed passwords, secure sessions, persisted
-practice history, server-side AI explanations, and Stripe payments.
+A real Express + Postgres backend: hashed passwords, secure sessions, a
+server-side paywall, persisted practice history that follows you across
+devices, server-side AI explanations, and Stripe payments.
 
-## What's real vs. what's still a placeholder
+## Why Postgres, not SQLite
 
-**Real and working once deployed:**
-- Signup/login with bcrypt-hashed passwords (never stored in plain text)
-- httpOnly session cookies (not readable or forgeable from browser JS)
-- Practice attempts and target score saved per-account in SQLite, so progress
-  follows you across devices once you log in on each one
-- `/api/explain` calls Anthropic's API from the server using your own key —
-  the key never reaches the browser
-- `/api/checkout` creates real Stripe Checkout Sessions; the webhook verifies
-  Stripe's signature before trusting any payment event
+An earlier version of this server used local SQLite. That broke on Render's
+free tier: free instances don't keep their local disk between restarts, so
+every time the server spun down from inactivity and woke back up, the
+database file — and every account in it — was wiped. That's why accounts
+seemed to vanish and logging back in failed. Postgres lives on its own
+separate, persistent host, so it survives restarts and lets the same
+account log in from any device.
 
-**Still needs you to configure before it does anything:**
-- Every feature above needs its matching environment variable set in `.env`
-  (see `.env.example`) — without `ANTHROPIC_API_KEY`, `/api/explain` returns
-  a clear "not configured" error instead of failing silently. Same for Stripe.
-- Full Mock Test still isn't built — that's a frontend/content gap, not a
-  backend one.
+## What's real vs. what still needs setup
+
+**Real and working once configured:**
+- Signup/login with bcrypt-hashed passwords, one account per email
+- httpOnly session cookies — same account works from any device, since the
+  data actually persists now
+- Practice attempts and target score saved per-account, durable across
+  restarts and redeploys
+- `/api/explain` calls Anthropic's API from the server using your own key
+- `/api/checkout` creates real Stripe Checkout Sessions; the webhook
+  verifies Stripe's signature before trusting any payment event
+- The `/dashboard.html` page and its data endpoints are gated server-side —
+  only `monthly` or `lifetime` plans get in; free/logged-out visitors are
+  redirected, not just visually blocked
+
+**Still needs you to configure:**
+- Every feature above needs its matching environment variable (see
+  `.env.example`) — most importantly `DATABASE_URL` now, since nothing
+  works without a real database connection.
+- Full Mock Test still isn't built.
 
 **Not done for you, and matters before real users touch this:**
-- HTTPS. Session cookies are only marked `secure` when `NODE_ENV=production`,
-  which requires HTTPS to actually work in a real browser. Most hosts below
-  give you HTTPS automatically.
-- Rate limiting on `/api/signup` and `/api/login` (add `express-rate-limit`
-  before launch, or a bad actor can hammer the login endpoint).
-- Password reset flow — not built. Anyone who forgets their password is
-  currently stuck; this needs an email-sending step (e.g. via Resend or
-  SendGrid) to be worth building properly.
-- SQLite is a single file on one server's disk. Fine for getting started;
-  once you have real concurrent traffic, migrate to a managed Postgres
-  (Supabase, Neon, Render Postgres) — the query patterns here would port over
-  with modest changes.
+- Rate limiting exists on login/signup and AI requests, but consider
+  tightening further before a public launch.
+- Password reset flow — not built yet.
+- If you ever outgrow a single free Postgres tier's connection limits,
+  that's a scaling problem to solve later, not now.
+
+## Getting a free Postgres database
+
+**Option A — Neon (neon.tech):**
+1. Sign up free, create a project
+2. Copy the connection string it gives you (starts with `postgresql://`)
+3. Paste it as `DATABASE_URL`
+
+**Option B — Supabase (supabase.com):**
+1. Sign up free, create a project
+2. Go to Project Settings → Database → Connection string (use the "URI" /
+   pooled connection format)
+3. Paste it as `DATABASE_URL`
+
+Either works fine for a project at this stage. The server creates its own
+tables automatically on first run — you don't need to set up any schema
+by hand.
 
 ## Local setup
 
@@ -42,43 +65,35 @@ practice history, server-side AI explanations, and Stripe payments.
 cd satangel-server
 npm install
 cp .env.example .env
-# edit .env with your real values (or leave AI/Stripe keys blank to test
-# accounts + progress tracking without them)
+# edit .env — DATABASE_URL is required; AI/Stripe keys can stay blank
+# to test accounts + progress tracking first
 npm start
 ```
 
-Visit `http://localhost:3000` — this serves the whole site (landing page,
-login, dashboard) AND the API from one server.
+Visit `http://localhost:3000` — this serves the whole site and the API
+from one server.
 
-## Deploying it somewhere real
+## Deploying it somewhere real (Render)
 
-This is a standard Node.js app, so any of these work. **Render** is the
-simplest match for what's built here (persistent disk for the SQLite file,
-free tier available):
-
-1. Push this folder to a GitHub repo (the `.gitignore` already keeps `.env`
-   and the database file out of it)
-2. Create a new **Web Service** on [render.com](https://render.com), connect
-   the repo
+1. Push this folder to a GitHub repo (`.gitignore` already keeps `.env`
+   out of it)
+2. Create a new **Web Service** on [render.com](https://render.com),
+   connect the repo
 3. Build command: `npm install` — Start command: `npm start`
-4. Add every variable from `.env.example` under **Environment** in Render's
-   dashboard (never commit real secrets to the repo)
-5. Once deployed, update `CLIENT_URL` in your environment variables to your
-   real Render URL (e.g. `https://sat-angel.onrender.com`)
+4. Add every variable from `.env.example` under **Environment**, including
+   your real `DATABASE_URL`
+5. Once deployed, update `CLIENT_URL` to your real Render URL
+   (e.g. `https://sat-angel.onrender.com`)
 6. In Stripe, point your webhook endpoint at
-   `https://your-domain/api/webhooks/stripe` and copy the signing secret into
-   `STRIPE_WEBHOOK_SECRET`
+   `https://your-domain/api/webhooks/stripe` and copy the signing secret
+   into `STRIPE_WEBHOOK_SECRET`
 
-Other good fits: **Railway**, **Fly.io**, or a small **DigitalOcean/Linode**
-droplet if you want more control. Avoid pure serverless platforms (Vercel
-serverless functions, plain AWS Lambda) unless you first swap SQLite for a
-hosted database — serverless functions don't have a persistent disk to keep
-a SQLite file on.
+Render's free tier still spins down after inactivity — but since your data
+now lives in Postgres instead of on Render's disk, that's fine: the server
+just restarts and reconnects, nothing is lost.
 
 ## Connecting your custom domain
 
 Once deployed, follow your host's custom domain instructions (Render has a
 straightforward one under Settings → Custom Domain) and point your domain's
-DNS at it. This replaces the earlier plan of hosting the static files
-directly on Netlify — now that there's a real server, the server itself
-should be what you deploy and point your domain at.
+DNS at it.

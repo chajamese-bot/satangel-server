@@ -112,23 +112,6 @@
   .plan-lifetime li::before{color:var(--gold-soft);}
   .plan .btn{width:100%; justify-content:center;}
 
-  .addon-card{
-    max-width:820px; margin:22px auto 0; background:var(--card); border:1px dashed rgba(111,184,232,0.4);
-    border-radius:16px; padding:24px 28px; display:flex; justify-content:space-between; align-items:center;
-    gap:24px; flex-wrap:wrap;
-  }
-  .addon-tag{
-    font-family:'IBM Plex Mono',monospace; font-size:0.7rem; color:var(--sky-soft); letter-spacing:0.05em;
-    text-transform:uppercase; display:block; margin-bottom:8px;
-  }
-  .addon-left h3{font-size:1.02rem; margin-bottom:6px;}
-  .addon-left p{color:var(--paper-dim); font-size:0.86rem; margin:0; max-width:44ch;}
-  .addon-right{display:flex; flex-direction:column; align-items:flex-end; gap:12px; flex-shrink:0;}
-  .addon-price{display:flex; align-items:baseline; gap:6px;}
-  .addon-price .amount{font-family:'Fraunces',serif; font-size:1.7rem; color:var(--paper);}
-  .addon-price .period{color:var(--paper-dim); font-size:0.82rem;}
-  .addon-right .btn{white-space:nowrap;}
-
   /* FAQ */
   .faq{max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:10px;}
   .faq-item{background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden;}
@@ -158,9 +141,6 @@
     .grid4{grid-template-columns:1fr;}
     .stats{gap:32px;}
     header{top:52px;}
-    .addon-card{flex-direction:column; align-items:flex-start;}
-    .addon-right{align-items:flex-start; width:100%;}
-    .addon-right .btn{width:100%; justify-content:center;}
   }
   @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto;} *{transition-duration:.001ms !important;} }
 </style>
@@ -180,7 +160,7 @@
     <div class="navlinks">
       <a href="#features">Features</a>
       <a href="#pricing">Pricing</a>
-      <a href="dashboard.html">Try it free</a>
+      <a href="dashboard.html">Dashboard</a>
       <a href="login.html">Log in</a>
       <a href="#faq">FAQ</a>
     </div>
@@ -197,7 +177,7 @@
     <a href="#pricing" class="btn btn-secondary">Start Monthly Plan — $49.99/mo</a>
   </div>
   <p class="hero-sub">No SAT experience required · Cancel monthly plan anytime · Back to School Sale ends September 20</p>
-  <p class="hero-sub"><a href="dashboard.html" style="color:var(--sky-soft); text-decoration:underline;">Or try real practice questions free, no payment required →</a></p>
+  <p class="hero-sub"><a href="#pricing" style="color:var(--sky-soft); text-decoration:underline;">See pricing and get started →</a></p>
 </section>
 
 <div class="stats">
@@ -272,18 +252,6 @@
       <a href="#" class="btn btn-primary" data-plan="lifetime">Get Lifetime Access</a>
     </div>
   </div>
-
-  <div class="addon-card">
-    <div class="addon-left">
-      <span class="addon-tag">Recommended add-on</span>
-      <h3>Demo Course</h3>
-      <p>A short, guided walkthrough of the platform and core strategies — a fast way to get oriented before diving into full practice. Often added alongside either plan above.</p>
-    </div>
-    <div class="addon-right">
-      <div class="addon-price"><span class="amount">$15</span><span class="period">one-time</span></div>
-      <a href="#" class="btn btn-secondary" data-plan="democourse">Add Demo Course</a>
-    </div>
-  </div>
 </section>
 
 <section id="faq">
@@ -318,7 +286,7 @@ const FAQ_DATA = [
   { q: "Do I get future content updates?", a: "Lifetime members receive all future question bank additions and feature updates at no extra cost. Monthly members receive updates for as long as their subscription is active." },
   { q: "Is this based on the actual Digital SAT format?", a: "Yes. The practice interface mirrors the Bluebook app's layout, including the question navigator, flag-for-review tool, and section timing." },
   { q: "What if I switch from monthly to lifetime later?", a: "You can upgrade to lifetime access at any point from your dashboard; your remaining monthly payments are credited toward the $99.99 lifetime price." },
-  { q: "What's your refund policy?", a: "If you're not satisfied within 7 days of purchase, contact support@satangel.com for a full refund on the Lifetime plan or Demo Course. Monthly subscriptions can be cancelled anytime and you won't be billed again — the current billing period remains active through its end date." }
+  { q: "What's your refund policy?", a: "If you're not satisfied within 7 days of purchase, contact support@satangel.com for a full refund on the Lifetime plan. Monthly subscriptions can be cancelled anytime and you won't be billed again — the current billing period remains active through its end date." }
 ];
 const faqList = document.getElementById('faqList');
 FAQ_DATA.forEach((item, i) => {
