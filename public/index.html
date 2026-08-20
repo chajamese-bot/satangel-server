@@ -369,25 +369,50 @@ FAQ_DATA.forEach((item, i) => {
   }
 })();
 
-const STRIPE_LINKS = {
-  monthly: "",     // e.g. "https://buy.stripe.com/xxxxx_monthly"
-  lifetime: "",    // e.g. "https://buy.stripe.com/xxxxx_lifetime"
-  democourse: ""   // e.g. "https://buy.stripe.com/xxxxx_democourse"
-};
-
+// =========================================================
+// Pricing buttons — call the real backend to start Stripe Checkout.
+// Requires being logged in (checkout is tied to your account).
+// =========================================================
 document.querySelectorAll('[data-plan]').forEach(btn => {
-  const plan = btn.dataset.plan;
-  const link = STRIPE_LINKS[plan];
-  if(link){
-    btn.setAttribute('href', link);
-    // real Stripe-hosted checkout — no preventDefault, no placeholder text
-    return;
-  }
-  btn.addEventListener('click', (e) => {
+  btn.addEventListener('click', async (e) => {
     e.preventDefault();
+    const plan = btn.dataset.plan;
     const original = btn.textContent;
-    btn.textContent = 'Checkout not connected yet';
-    setTimeout(() => { btn.textContent = original; }, 2200);
+
+    // Must be logged in — checkout is tied to an account so the webhook
+    // can credit the right person.
+    let me;
+    try{
+      const meRes = await fetch('/api/me', { credentials: 'same-origin' });
+      if(meRes.ok) me = await meRes.json();
+    }catch(err){ /* fall through to login redirect below */ }
+
+    if(!me){
+      window.location.href = `login.html?next=index.html`;
+      return;
+    }
+
+    btn.textContent = 'Starting checkout…';
+    btn.style.pointerEvents = 'none';
+
+    try{
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ plan })
+      });
+      const data = await res.json();
+      if(res.ok && data.url){
+        window.location.href = data.url; // redirect to real Stripe Checkout
+      }else{
+        btn.textContent = data.error || 'Checkout is not set up yet for this plan';
+        setTimeout(() => { btn.textContent = original; btn.style.pointerEvents = ''; }, 2500);
+      }
+    }catch(err){
+      btn.textContent = 'Could not reach the server';
+      setTimeout(() => { btn.textContent = original; btn.style.pointerEvents = ''; }, 2500);
+    }
   });
 });
 </script>
