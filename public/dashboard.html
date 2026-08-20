@@ -1951,11 +1951,30 @@ async function renderAccountWidget(){
   const widget = document.getElementById('accountWidget');
   const me = await checkLogin();
   if(me){
-    widget.innerHTML = `Hi, ${me.name} · <a href="#" id="logoutLink" style="color:var(--sky-soft); text-decoration:underline;">Log out</a>`;
+    widget.innerHTML = `Hi, ${me.name} · <a href="#" id="manageLink" style="color:var(--sky-soft); text-decoration:underline;">Manage subscription</a> · <a href="#" id="logoutLink" style="color:var(--sky-soft); text-decoration:underline;">Log out</a>`;
     document.getElementById('logoutLink').addEventListener('click', async (e) => {
       e.preventDefault();
       await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' });
       window.location.reload();
+    });
+    document.getElementById('manageLink').addEventListener('click', async (e) => {
+      e.preventDefault();
+      const link = e.target;
+      const original = link.textContent;
+      link.textContent = 'Opening…';
+      try{
+        const res = await fetch('/api/portal', { method: 'POST', credentials: 'same-origin' });
+        const data = await res.json();
+        if(res.ok && data.url){
+          window.location.href = data.url;
+        }else{
+          link.textContent = data.error || 'Not available yet';
+          setTimeout(() => { link.textContent = original; }, 3000);
+        }
+      }catch(err){
+        link.textContent = 'Could not reach the server';
+        setTimeout(() => { link.textContent = original; }, 3000);
+      }
     });
   }else{
     widget.innerHTML = `<a href="login.html" style="color:var(--sky-soft); text-decoration:underline;">Log in to save progress</a>`;

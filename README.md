@@ -87,6 +87,11 @@ from one server.
 6. In Stripe, point your webhook endpoint at
    `https://your-domain/api/webhooks/stripe` and copy the signing secret
    into `STRIPE_WEBHOOK_SECRET`
+7. Turn on the **Customer Portal** so paying customers can cancel or
+   manage their own subscription without needing to contact you: in
+   Stripe, go to **Settings → Billing → Customer portal**, and activate
+   it (the defaults are fine to start with). Without this step, the
+   "Manage subscription" link on the dashboard will show an error.
 
 Render's free tier still spins down after inactivity — but since your data
 now lives in Postgres instead of on Render's disk, that's fine: the server

@@ -139,7 +139,7 @@ async function requireAuth(req, res, next) {
   if (!token) return res.status(401).json({ error: 'Not logged in' });
   try {
     const payload = jwt.verify(token, JWT_SECRET);
-    const result = await pool.query('SELECT id, name, email, target_score, plan FROM users WHERE id = $1', [payload.uid]);
+    const result = await pool.query('SELECT id, name, email, target_score, plan, stripe_customer_id FROM users WHERE id = $1', [payload.uid]);
     const user = result.rows[0];
     if (!user) return res.status(401).json({ error: 'Account no longer exists' });
     req.user = user;
@@ -383,6 +383,29 @@ app.post('/api/checkout', requireAuth, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(502).json({ error: 'Could not start checkout.' });
+  }
+});
+
+// -----------------------------------------------------------
+// Stripe Customer Portal — lets a customer manage or cancel their own
+// subscription without needing to email anyone. Requires "Customer portal"
+// to be turned on in the Stripe Dashboard (Settings → Billing → Customer
+// portal) — see README.md.
+// -----------------------------------------------------------
+app.post('/api/portal', requireAuth, async (req, res) => {
+  if (!stripe) return res.status(501).json({ error: 'Stripe is not configured on this server.' });
+  if (!req.user.stripe_customer_id) {
+    return res.status(400).json({ error: 'No billing account found yet — this is available once you have an active plan.' });
+  }
+  try {
+    const session = await stripe.billingPortal.sessions.create({
+      customer: req.user.stripe_customer_id,
+      return_url: `${process.env.CLIENT_URL}/dashboard.html`
+    });
+    res.json({ url: session.url });
+  } catch (err) {
+    console.error('Portal session error:', err);
+    res.status(502).json({ error: 'Could not open the billing portal. Make sure Customer Portal is enabled in your Stripe settings.' });
   }
 });
 
