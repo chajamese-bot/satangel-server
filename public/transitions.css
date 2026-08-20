@@ -1,0 +1,51 @@
+/* =========================================================
+   Shared page-transition + scroll-reveal system.
+   Linked from every page for a consistent, premium feel:
+   fade-in on load, smooth fade-out when navigating away,
+   and elements gently rising into view on scroll.
+   Respects prefers-reduced-motion throughout.
+   ========================================================= */
+
+body{
+  opacity:0;
+  transform:translateY(10px);
+  transition:opacity 0.5s cubic-bezier(.16,.84,.44,1), transform 0.5s cubic-bezier(.16,.84,.44,1);
+}
+body.page-loaded{
+  opacity:1;
+  transform:translateY(0);
+}
+body.page-leaving{
+  opacity:0;
+  transform:translateY(-10px);
+  transition:opacity 0.22s ease-in, transform 0.22s ease-in;
+}
+
+/* Generic scroll-reveal primitive — add class="reveal" to any element */
+.reveal{
+  opacity:0;
+  transform:translateY(26px) scale(0.98);
+  transition:opacity 0.55s cubic-bezier(.16,.84,.44,1), transform 0.55s cubic-bezier(.16,.84,.44,1);
+}
+.reveal.revealed{
+  opacity:1;
+  transform:translateY(0) scale(1);
+}
+
+/* Optional stagger helper — add reveal-1 through reveal-6 alongside .reveal
+   for children that should pop in slightly after one another */
+.reveal-1{ transition-delay:0.05s; }
+.reveal-2{ transition-delay:0.10s; }
+.reveal-3{ transition-delay:0.15s; }
+.reveal-4{ transition-delay:0.20s; }
+.reveal-5{ transition-delay:0.25s; }
+.reveal-6{ transition-delay:0.30s; }
+
+@media (prefers-reduced-motion: reduce){
+  body, body.page-loaded, body.page-leaving{
+    opacity:1 !important; transform:none !important; transition:none !important;
+  }
+  .reveal, .reveal.revealed{
+    opacity:1 !important; transform:none !important; transition:none !important;
+  }
+}

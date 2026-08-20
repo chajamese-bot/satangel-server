@@ -50,6 +50,8 @@
   .btn-row{display:flex; gap:10px;}
   .btn-secondary{flex:1; background:var(--navy-deep); color:var(--paper); border:1px solid var(--line); font-weight:600; font-size:0.88rem; padding:11px; border-radius:9px; cursor:pointer;}
 </style>
+<link rel="stylesheet" href="transitions.css">
+<noscript><style>body{opacity:1 !important; transform:none !important;}</style></noscript>
 </head>
 <body>
 
@@ -175,7 +177,22 @@ document.getElementById('authForm').addEventListener('submit', async (e) => {
   submitBtn.disabled = false;
 });
 
+function getNextParam(){
+  const params = new URLSearchParams(window.location.search);
+  const next = params.get('next');
+  // Only allow relative paths on this same site — never redirect to an
+  // external URL based on a query param, which would be an open-redirect risk.
+  if(next && next.startsWith('/') && !next.startsWith('//')) return next;
+  if(next && !next.includes('://') && !next.startsWith('/')) return next; // e.g. "index.html"
+  return null;
+}
+
 function showSignedIn(name, email){
+  const next = getNextParam();
+  if(next){
+    window.location.href = next;
+    return;
+  }
   document.getElementById('signedOutView').style.display = 'none';
   document.getElementById('signedInView').classList.add('show');
   document.getElementById('avatarInitial').textContent = (name || email).charAt(0).toUpperCase();
@@ -191,6 +208,7 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
 });
 
 // If already logged in (valid session cookie), skip straight to signed-in view
+// (or straight to the next param, e.g. back to checkout or the dashboard)
 (async function checkSession(){
   try{
     const res = await fetch('/api/me', { credentials: 'same-origin' });
@@ -202,5 +220,6 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
 })();
 </script>
 
+<script src="transitions.js"></script>
 </body>
 </html>
