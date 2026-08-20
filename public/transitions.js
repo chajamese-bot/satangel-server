@@ -56,9 +56,9 @@
     setTimeout(() => { window.location.href = href; }, 200);
   });
 
-  // ---- 3. Scroll-reveal for elements with class="reveal" ----
+  // ---- 3. Scroll-reveal for elements with any reveal-* variant class ----
   function initReveal(){
-    const revealEls = document.querySelectorAll('.reveal');
+    const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-zoom, .reveal-rotate, .reveal-fade');
     if(revealEls.length === 0) return;
     if(REDUCED){
       revealEls.forEach(el => el.classList.add('revealed'));

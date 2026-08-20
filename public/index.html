@@ -207,9 +207,9 @@
 </section>
 
 <div class="stats">
-  <div class="stat reveal reveal-1"><b>Adaptive</b><span>practice that targets weak spots</span></div>
-  <div class="stat reveal reveal-2"><b>Instant</b><span>AI explanations on every question</span></div>
-  <div class="stat reveal reveal-3"><b>Bluebook</b><span>format, built for the digital test</span></div>
+  <div class="stat"><b>Adaptive</b><span>practice that targets weak spots</span></div>
+  <div class="stat"><b>Instant</b><span>AI explanations on every question</span></div>
+  <div class="stat"><b>Bluebook</b><span>format, built for the digital test</span></div>
 </div>
 
 <section id="features">
@@ -218,22 +218,22 @@
     <h2>Everything a $200/hr tutor gives you, on demand.</h2>
   </div>
   <div class="grid4">
-    <div class="feature reveal reveal-1">
+    <div class="feature reveal-left">
       <div class="ic">◈</div>
       <h3>Adaptive Practice Tests</h3>
       <p>Difficulty adjusts to you in real time, just like the real Digital SAT's multistage design.</p>
     </div>
-    <div class="feature reveal reveal-2">
+    <div class="feature reveal-zoom reveal-1">
       <div class="ic">✦</div>
       <h3>Instant AI Explanations</h3>
       <p>Every question comes with a reasoning walkthrough, not just the correct letter.</p>
     </div>
-    <div class="feature reveal reveal-3">
+    <div class="feature reveal-zoom reveal-2">
       <div class="ic">◎</div>
       <h3>Score Predictor</h3>
       <p>A live-updating estimate of your current SAT score based on recent performance.</p>
     </div>
-    <div class="feature reveal reveal-4">
+    <div class="feature reveal-right">
       <div class="ic">▤</div>
       <h3>Performance Analytics</h3>
       <p>See exactly which skills are costing you points, down to the sub-topic.</p>
@@ -242,13 +242,13 @@
 </section>
 
 <section id="pricing">
-  <div class="section-head reveal">
+  <div class="section-head reveal-fade">
     <div class="eyebrow">Pricing</div>
     <h2>Pick the plan that matches your timeline.</h2>
     <p>Both plans unlock the full question bank, AI explanations, and analytics.</p>
   </div>
   <div class="plans">
-    <div class="plan reveal reveal-1">
+    <div class="plan reveal-left">
       <h3>Monthly</h3>
       <p class="plan-desc">Flexible, month to month.</p>
       <div class="price-row"><span class="amount">$49.99</span><span class="period">/ month</span></div>
@@ -262,7 +262,7 @@
       </ul>
       <a href="#" class="btn btn-secondary" data-plan="monthly">Start Monthly Plan</a>
     </div>
-    <div class="plan plan-lifetime reveal reveal-2">
+    <div class="plan plan-lifetime reveal-right">
       <div class="plan-badge">Best Value · Save $50</div>
       <h3>Lifetime Access</h3>
       <p class="plan-desc">Pay once, prep for as long as it takes.</p>
@@ -281,7 +281,7 @@
 </section>
 
 <section id="faq">
-  <div class="section-head reveal">
+  <div class="section-head reveal-fade">
     <div class="eyebrow">FAQ</div>
     <h2>Questions, answered.</h2>
   </div>
@@ -289,9 +289,9 @@
 </section>
 
 <section class="final-cta">
-  <h2 class="reveal">Your target score is closer than you think.</h2>
-  <p class="reveal">Join students already prepping with SAT Angel.</p>
-  <div class="hero-ctas reveal">
+  <h2 class="reveal-zoom">Your target score is closer than you think.</h2>
+  <p class="reveal-fade reveal-1">Join students already prepping with SAT Angel.</p>
+  <div class="hero-ctas reveal-rotate reveal-2">
     <a href="#pricing" class="btn btn-primary">Get Lifetime Access — $99.99</a>
     <a href="#pricing" class="btn btn-secondary">Start Monthly — $49.99/mo</a>
   </div>
@@ -315,8 +315,8 @@ const FAQ_DATA = [
 const faqList = document.getElementById('faqList');
 FAQ_DATA.forEach((item, i) => {
   const wrap = document.createElement('div');
-  wrap.className = 'faq-item reveal';
-  wrap.style.transitionDelay = `${Math.min(i * 0.05, 0.3)}s`;
+  wrap.className = 'faq-item reveal-zoom';
+  wrap.style.transitionDelay = `${Math.min(i * 0.06, 0.36)}s`;
   wrap.innerHTML = `
     <button class="faq-q" aria-expanded="false">
       <span>${item.q}</span>

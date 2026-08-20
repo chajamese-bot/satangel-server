@@ -2,50 +2,68 @@
    Shared page-transition + scroll-reveal system.
    Linked from every page for a consistent, premium feel:
    fade-in on load, smooth fade-out when navigating away,
-   and elements gently rising into view on scroll.
+   and elements dramatically animating into view on scroll —
+   several distinct variants so it doesn't feel repetitive.
    Respects prefers-reduced-motion throughout.
    ========================================================= */
 
 body{
   opacity:0;
-  transform:translateY(10px);
-  transition:opacity 0.5s cubic-bezier(.16,.84,.44,1), transform 0.5s cubic-bezier(.16,.84,.44,1);
+  transform:translateY(14px) scale(0.99);
+  transition:opacity 0.6s cubic-bezier(.16,.84,.44,1), transform 0.6s cubic-bezier(.16,.84,.44,1);
 }
 body.page-loaded{
   opacity:1;
-  transform:translateY(0);
+  transform:translateY(0) scale(1);
 }
 body.page-leaving{
   opacity:0;
-  transform:translateY(-10px);
-  transition:opacity 0.22s ease-in, transform 0.22s ease-in;
+  transform:translateY(-16px) scale(0.98);
+  transition:opacity 0.25s ease-in, transform 0.25s ease-in;
 }
 
-/* Generic scroll-reveal primitive — add class="reveal" to any element */
-.reveal{
+/* ---- Reveal variants — pick ONE per element ----
+   .reveal            → default: rises up from below (dramatic distance)
+   .reveal-left        → slides in from the left
+   .reveal-right       → slides in from the right
+   .reveal-zoom         → scales up from smaller, punchier
+   .reveal-rotate      → rises with a slight tilt that settles straight
+   .reveal-fade         → simple fade, no movement (for subtler elements)
+   All use a slight overshoot easing for a snappier, more premium feel. */
+
+.reveal, .reveal-left, .reveal-right, .reveal-zoom, .reveal-rotate, .reveal-fade{
   opacity:0;
-  transform:translateY(26px) scale(0.98);
-  transition:opacity 0.55s cubic-bezier(.16,.84,.44,1), transform 0.55s cubic-bezier(.16,.84,.44,1);
+  transition:opacity 0.7s cubic-bezier(.22,1,.36,1), transform 0.7s cubic-bezier(.22,1,.36,1);
 }
-.reveal.revealed{
+.reveal{ transform:translateY(56px); }
+.reveal-left{ transform:translateX(-70px); }
+.reveal-right{ transform:translateX(70px); }
+.reveal-zoom{ transform:scale(0.8); }
+.reveal-rotate{ transform:translateY(40px) rotate(-5deg); }
+.reveal-fade{ transform:none; transition:opacity 0.8s ease; }
+
+.reveal.revealed, .reveal-left.revealed, .reveal-right.revealed,
+.reveal-zoom.revealed, .reveal-rotate.revealed, .reveal-fade.revealed{
   opacity:1;
-  transform:translateY(0) scale(1);
+  transform:translate(0,0) scale(1) rotate(0deg);
 }
 
-/* Optional stagger helper — add reveal-1 through reveal-6 alongside .reveal
-   for children that should pop in slightly after one another */
-.reveal-1{ transition-delay:0.05s; }
-.reveal-2{ transition-delay:0.10s; }
-.reveal-3{ transition-delay:0.15s; }
-.reveal-4{ transition-delay:0.20s; }
-.reveal-5{ transition-delay:0.25s; }
-.reveal-6{ transition-delay:0.30s; }
+/* Stagger helpers — combine with any reveal variant above */
+.reveal-1{ transition-delay:0.06s; }
+.reveal-2{ transition-delay:0.14s; }
+.reveal-3{ transition-delay:0.22s; }
+.reveal-4{ transition-delay:0.30s; }
+.reveal-5{ transition-delay:0.38s; }
+.reveal-6{ transition-delay:0.46s; }
 
 @media (prefers-reduced-motion: reduce){
   body, body.page-loaded, body.page-leaving{
     opacity:1 !important; transform:none !important; transition:none !important;
   }
-  .reveal, .reveal.revealed{
+  .reveal, .reveal-left, .reveal-right, .reveal-zoom, .reveal-rotate, .reveal-fade,
+  .reveal.revealed, .reveal-left.revealed, .reveal-right.revealed,
+  .reveal-zoom.revealed, .reveal-rotate.revealed, .reveal-fade.revealed{
     opacity:1 !important; transform:none !important; transition:none !important;
   }
 }
+
